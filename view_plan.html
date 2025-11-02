@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block title %}Plan: {{ plan.lesson_title }} - CUHK PE Planner{% endblock %}
+
+{% block styles %}
+<style>
+    .print-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+    }
+    .success-message {
+        background-color: #d4edda;
+        border-left: 4px solid #28a745;
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+    @media print {
+        .no-print {
+            display: none;
+        }
+        .page, .page-break { break-after: page; }
+        body {
+            font-size: 12pt;
+            color: black;
+        }
+        .card {
+            border: 1px solid black;
+        }
+    }
+    .lesson-section {
+        margin-bottom: 2rem;
+    }
+    .chinese-section {
+        font-family: "Microsoft JhengHei", "PMingLiU", sans-serif;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Success Message with Feedback Prompt -->
+<div class="success-message no-print">
+    <h5>lesson plan created successfully!</h5>
+    <p>How was your experience?
+       <a href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal" class="text-decoration-none">Tell us what you think</a> 
+       to help us improve our platform!
+    </p>
+</div>
+
+<!-- ENGLISH LESSON PLAN -->
+<div class="lesson-section">
+    <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; line-height:18pt;">
+        <strong><u><span>Lesson Plan</span></u></strong>
+    </p>
+    
+    <!-- English content remains the same but cleaned up -->
+    <p>Plan ID: {{ plan.id }}</p>
+    <p></p>
+
+    <p><strong>Student-teacher's name:</strong> {{ plan.teacher_name }} (PESH Year {{ plan.pesh_year }})</p>
+    <p><strong>Date:</strong> {{ plan.date }} <strong>Time:</strong> {{ plan.class_duration }} mins ({{ plan.start_time }} to {{ plan.end_time }})</p>
+    <p><strong>School Name:</strong> {{ plan.school_name }}</p>
+    <p><strong>Year:</strong> {{ plan.year }} <strong>Class: </strong>{{ plan.class_id }} <strong>Level: </strong>{{ plan.class_level }} <strong>Class Size: </strong>{{ plan.class_size }} ( Boys: {{ plan.boys }} Girls: {{ plan.girls }} )</p>
+    <p><strong>Unit Topic: </strong>{{ plan.topic }} (Day {{ plan.day_of_unit }} of {{ plan.unit_duration }} days of the Unit)</p>
+    <p><strong>Main Theme of this Lesson:</strong> {{ plan.lesson_theme }}</p>
+    <p><strong>Students' Ability Level:</strong> {{ plan.ability_level }}% proficiency</p>
+    <p></p>
+
+    <!-- Objectives Table -->
+    <table class="table-bordered" style="width: 100%; border-collapse: collapse;">
+        <tbody>
+            <tr>
+                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                    <p><strong>i) Psychomotor performance objectives</strong></p>
+                    <p>{{ plan.psychomotor_objs }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                    <p><strong>ii) Cognitive performance objectives</strong></p>
+                    <p>{{ plan.cognitive_objs }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                    <p><strong>iii) Affective objectives</strong></p>
+                    <p>{{ plan.affective_objs }}</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><strong>Teaching Venue/Facility:</strong> {{ plan.venue }}</p>
+    <p><strong>Equipment:</strong> {{ plan.equipment }}</p>
+    <p><strong>Safety Concerns:</strong> {{ plan.safety_concerns }}</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- LESSON PLANNING TABLE - ENGLISH -->
+<div class="lesson-section">
+    <p><strong><u>2.) Lesson Planning:</u></strong></p>
+    
+    <table class="table-bordered" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style="width: 8%;">Time</th>
+                <th style="width: 25%;">Teaching Content/Activity</th>
+                <th style="width: 23%;">Teaching Cues/Objectives</th>
+                <th style="width: 25%;">Class Organization/Management/Teacher's Positions</th>
+                <th style="width: 19%;">Equipment</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Introductory Activities -->
+            <tr>
+                <td style="text-align: center;"><strong>{{ plan.intro_time }}</strong> mins</td>
+                <td><strong>Introductory Activities</strong></td>
+                <td style="text-align: center;">{{ plan.intro_cues }}</td>
+                <td style="text-align: center;">
+                    {% if plan.intro_diagram %}
+                        <img src="{{ plan.intro_diagram }}" style="max-width:100%; max-height:100px;" alt="Introductory Activities Diagram">
+                    {% else %}
+                        <em>(No diagram uploaded)</em>
+                    {% endif %}
+                </td>
+                <td style="text-align: center;">{{ plan.intro_equipment }}</td>
+            </tr>
+            
+            <!-- Skill Development -->
+            <tr>
+                <td style="text-align: center;"><strong>{{ plan.sd_time }}</strong> mins</td>
+                <td><strong>Skill Development</strong></td>
+                <td style="text-align: center;">{{ plan.sd_cues }}</td>
+                <td style="text-align: center;">
+                    {% if plan.sd_diagram %}
+                        <img src="{{ plan.sd_diagram }}" style="max-width:100%; max-height:100px;" alt="Skill Development Diagram">
+                    {% else %}
+                        <em>(No diagram uploaded)</em>
+                    {% endif %}
+                </td>
+                <td style="text-align: center;">{{ plan.sd_equipment }}</td>
+            </tr>
+            
+            <!-- Application -->
+            <tr>
+                <td style="text-align: center;"><strong>{{ plan.appli_time }}</strong> mins</td>
+                <td><strong>Application</strong></td>
+                <td style="text-align: center;">{{ plan.appli_cues }}</td>
+                <td style="text-align: center;">
+                    {% if plan.appli_diagram %}
+                        <img src="{{ plan.appli_diagram }}" style="max-width:100%; max-height:100px;" alt="Application Diagram">
+                    {% else %}
+                        <em>(No diagram uploaded)</em>
+                    {% endif %}
+                </td>
+                <td style="text-align: center;">{{ plan.appli_equipment }}</td>
+            </tr>
+            
+            <!-- Concluding Activities -->
+            <tr>
+                <td style="text-align: center;"><strong>{{ plan.ca_time }}</strong> mins</td>
+                <td><strong>Concluding Activities</strong></td>
+                <td style="text-align: center;">{{ plan.ca_cues }}</td>
+                <td style="text-align: center;">
+                    {% if plan.ca_diagram %}
+                        <img src="{{ plan.ca_diagram }}" style="max-width:100%; max-height:100px;" alt="Concluding Activities Diagram">
+                    {% else %}
+                        <em>(No diagram uploaded)</em>
+                    {% endif %}
+                </td>
+                <td style="text-align: center;">{{ plan.ca_equipment }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Follow-up and Reflection -->
+    <table class="table-bordered" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <tbody>
+            <tr>
+                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                    <p><strong><u>3.) Follow-up Actions:</u></strong></p>
+                    <p>{{ plan.followup_actions }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                    <p><strong><u>4.) Self-reflection:</u></strong></p>
+                    <p>{{ plan.self_reflection }}</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="page-break"></div>
+
+<!-- CHINESE LESSON PLAN -->
+<div class="lesson-section chinese-section">
+    <p style="text-align: center; line-height: 18pt;">
+        <strong><u>教案</u></strong>
+    </p>
+    
+    <!-- Chinese Header Information -->
+    <p><strong>實習教師姓名:</strong> {{ plan.teacher_name_zh }} (PESH Year {{ plan.pesh_year }})</p>
+    <p><strong>日期:</strong> {{ plan.date }} <strong>上課時間:</strong> {{ plan.class_duration }}分鐘 ({{ plan.start_time }} 至 {{ plan.end_time }})</p>
+    <p><strong>學校名稱:</strong> {{ plan.school_name_zh }}</p>
+    <p><strong>班級:</strong> {{ plan.year }} <strong>班別: </strong>{{ plan.class_id_zh }} <strong>級別: </strong>
+        {% if plan.class_level_zh == 'Primary' %}小學{% else %}中學{% endif %} 
+        <strong>學生人數: </strong>{{ plan.class_size }} (男生: {{ plan.boys }} 女生: {{ plan.girls }} )
+    </p>
+    <p><strong>單元主題: </strong>{{ plan.topic_zh }} (本單元第 {{ plan.day_of_unit }}/{{ plan.unit_duration }} 課時)</p>
+    <p><strong>本教節的教學主題:</strong> {{ plan.lesson_theme_zh }}</p>
+    <p><strong>學生能力:</strong> {{ plan.ability_level }}% 熟練度</p>
+    <p></p>
+
+    <!-- Chinese Objectives Table -->
+    <table class="table-bordered" style="width: 100%; border-collapse: collapse;">
+        <tbody>
+            <tr>
+                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                    <p><strong>i) 技能表現目標</strong></p>
+                    <p>{{ plan.psychomotor_objs_zh }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                    <p><strong>ii) 認知表現目標</strong></p>
+                    <p>{{ plan.cognitive_objs_zh }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                    <p><strong>iii) 情意表現目標</strong></p>
+                    <p>{{ plan.affective_objs_zh }}</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p><strong>教學場地/設施:</strong> {{ plan.venue_zh }}</p>
+    <p><strong>器材:</strong> {{ plan.equipment_zh }}</p>
+    <p><strong>安全考慮:</strong> {{ plan.safety_concerns_zh }}</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- CHINESE LESSON PLANNING TABLE -->
+<div class="lesson-section chinese-section">
+    <p><strong><u>2.) 教案規劃:</u></strong></p>
+    
+    <table class="table-bordered" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style="width: 8%;">時間</th>
+                <th style="width: 25%;">教學內容/活動</th>
+                <th style="width: 23%;">教學要點/目標</th>
+                <th style="width: 25%;">課堂組織/管理/教師位置</th>
+                <th style="width: 19%;">所需器材/用具</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- 引入活動 -->
+            <tr>
+                <td style="text-align: center;"><strong>{{ plan.intro_time }}</strong> 分鐘</td>
+                <td><strong>引入活動</strong></td>
+                <td style="text-align: center;">{{ plan.intro_cues_zh }}</td>
+                <td style="text-align: center;">
+                    {% if plan.intro_diagram %}
+                        <img src="{{ plan.intro_diagram }}" style="max-width:100%; max-height:100px;" alt="引入活動圖表">
+                    {% else %}
+                        <em>(沒有上傳圖表)</em>
+                    {% endif %}
+                </td>
+                <td style="text-align: center;">{{ plan.intro_equipment_zh }}</td>
+            </tr>
+            
+            <!-- 技能發展 -->
+            <tr>
+                <td style="text-align: center;"><strong>{{ plan.sd_time }}</strong> 分鐘</td>
+                <td><strong>技能發展</strong></td>
+                <td style="text-align: center;">{{ plan.sd_cues_zh }}</td>
+                <td style="text-align: center;">
+                    {% if plan.sd_diagram %}
+                        <img src="{{ plan.sd_diagram }}" style="max-width:100%; max-height:100px;" alt="技能發展圖表">
+                    {% else %}
+                        <em>(沒有上傳圖表)</em>
+                    {% endif %}
+                </td>
+                <td style="text-align: center;">{{ plan.sd_equipment_zh }}</td>
+            </tr>
+            
+            <!-- 鞏固/應用活動 -->
+            <tr>
+                <td style="text-align: center;"><strong>{{ plan.appli_time }}</strong> 分鐘</td>
+                <td><strong>鞏固/應用活動</strong></td>
+                <td style="text-align: center;">{{ plan.appli_cues_zh }}</td>
+                <td style="text-align: center;">
+                    {% if plan.appli_diagram %}
+                        <img src="{{ plan.appli_diagram }}" style="max-width:100%; max-height:100px;" alt="應用活動圖表">
+                    {% else %}
+                        <em>(沒有上傳圖表)</em>
+                    {% endif %}
+                </td>
+                <td style="text-align: center;">{{ plan.appli_equipment_zh }}</td>
+            </tr>
+            
+            <!-- 整理活動 -->
+            <tr>
+                <td style="text-align: center;"><strong>{{ plan.ca_time }}</strong> 分鐘</td>
+                <td><strong>整理活動</strong></td>
+                <td style="text-align: center;">{{ plan.ca_cues_zh }}</td>
+                <td style="text-align: center;">
+                    {% if plan.ca_diagram %}
+                        <img src="{{ plan.ca_diagram }}" style="max-width:100%; max-height:100px;" alt="整理活動圖表">
+                    {% else %}
+                        <em>(沒有上傳圖表)</em>
+                    {% endif %}
+                </td>
+                <td style="text-align: center;">{{ plan.ca_equipment_zh }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Chinese Follow-up and Reflection -->
+    <table class="table-bordered" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <tbody>
+            <tr>
+                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                    <p><strong><u>3.) 跟進事項:</u></strong></p>
+                    <p>{{ plan.followup_actions_zh }}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                    <p><strong><u>4.) 自我反思:</u></strong></p>
+                    <p>{{ plan.self_reflection_zh }}</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Action Buttons -->
+<div class="text-center mt-4 no-print">
+    <a href="{{ url_for('create_plan_form') }}" class="btn btn-primary me-2">Create Another Plan</a>
+    <button onclick="window.print()" class="btn btn-outline-primary me-2">Print Plan</button>
+    <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+        💬 Feedback
+    </button>
+</div>
+
+<button onclick="window.print()" class="btn btn-primary print-btn no-print">
+    📄 Print
+</button>
+{% endblock %}
