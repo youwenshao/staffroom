@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}staffroom{% endblock %}
+
+{% block styles %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #DDA52D, #69256B);
+        color: white;
+        padding: 4rem 0;
+        border-radius: 0 0 20px 20px;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4">staffroom</h1>
+        <p class="lead">your tool for creating standardized physical education lesson plans</p>
+        <a href="{{ url_for('create_plan_form') }}" class="btn btn-light btn-lg mt-3">New Lesson Plan</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">about</h3>
+                    <p class="card-text">
+                        This online repository and resource sharing platform helps PE teachers at CUHK create standardized lesson plans that are easy to share and understand. Developed as part of Prof. Juanita Cheung's PDTL Grant program.
+                    </p>
+                    
+                    <div class="alert alert-info mt-4">
+                        <h5>we value your feedback!</h5>
+                        <p>This is an early version of the platform. Your suggestions will help us improve.</p>
+                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                            Share Your Thoughts
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
