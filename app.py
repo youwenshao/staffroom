@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB max file size
 
 # In-memory storage for lesson plans
@@ -283,3 +283,5 @@ def view_plan(plan_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+else:
+    application = app
