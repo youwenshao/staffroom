@@ -206,7 +206,7 @@ def create_lesson():
     lesson_plans.append(new_plan)
     
     # Redirect to view the plan
-    return redirect(url_for('view_plan', plan_id=new_plan['id']))
+    return redirect(url_for('view_lesson_plan', plan_id=new_plan['id']))
 
 @app.route('/create-unit', methods=['POST'])
 def create_unit():
