@@ -61,7 +61,7 @@
 {% block content %}
 <!-- Success Message with Feedback Prompt -->
 <div class="success-message no-print">
-    <h5>lesson plan created successfully!</h5>
+    <h5>Lesson plan created successfully!</h5>
     <p>How was your experience?
        <a href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal" class="text-decoration-none">Tell us what you think</a> 
        to help us improve our platform!
@@ -86,22 +86,23 @@
     <p></p>
 
     <!-- Objectives Table -->
+    <h4 class="section-title">1.) Lesson Objectives:</h4>
     <table class="lesson-table">
         <tbody>
             <tr>
-                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                <td>
                     <p><strong>i) Psychomotor performance objectives</strong></p>
                     <p>{{ plan.psychomotor_objs }}</p>
                 </td>
             </tr>
             <tr>
-                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                <td>
                     <p><strong>ii) Cognitive performance objectives</strong></p>
                     <p>{{ plan.cognitive_objs }}</p>
                 </td>
             </tr>
             <tr>
-                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                <td>
                     <p><strong>iii) Affective objectives</strong></p>
                     <p>{{ plan.affective_objs }}</p>
                 </td>
@@ -118,7 +119,7 @@
 
 <!-- LESSON PLANNING TABLE - ENGLISH -->
 <div class="lesson-section">
-    <p><strong><u>2.) Lesson Planning:</u></strong></p>
+    <h4 class="section-title">2.) Lesson Planning:</h4>
     
     <table class="lesson-table">
         <thead>
@@ -197,13 +198,13 @@
     <table class="table-bordered" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
         <tbody>
             <tr>
-                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                <td>
                     <p><strong><u>3.) Follow-up Actions:</u></strong></p>
                     <p>{{ plan.followup_actions }}</p>
                 </td>
             </tr>
             <tr>
-                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                <td>
                     <p><strong><u>4.) Self-reflection:</u></strong></p>
                     <p>{{ plan.self_reflection }}</p>
                 </td>
@@ -234,22 +235,23 @@
     <p></p>
 
     <!-- Chinese Objectives Table -->
+    <h4 class="section-title">1.) 教學目標:</h4>
     <table class="lesson-table">
         <tbody>
             <tr>
-                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                <td>
                     <p><strong>i) 技能表現目標</strong></p>
                     <p>{{ plan.psychomotor_objs_zh }}</p>
                 </td>
             </tr>
             <tr>
-                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                <td>
                     <p><strong>ii) 認知表現目標</strong></p>
                     <p>{{ plan.cognitive_objs_zh }}</p>
                 </td>
             </tr>
             <tr>
-                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                <td>
                     <p><strong>iii) 情意表現目標</strong></p>
                     <p>{{ plan.affective_objs_zh }}</p>
                 </td>
@@ -266,7 +268,7 @@
 
 <!-- CHINESE LESSON PLANNING TABLE -->
 <div class="lesson-section chinese-section">
-    <p><strong><u>2.) 教案規劃:</u></strong></p>
+    <h4 class="section-title">2.) 教案規劃:</h4>
     
     <table class="lesson-table">
         <thead>
@@ -345,13 +347,13 @@
     <table class="table-bordered" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
         <tbody>
             <tr>
-                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                <td>
                     <p><strong><u>3.) 跟進事項:</u></strong></p>
                     <p>{{ plan.followup_actions_zh }}</p>
                 </td>
             </tr>
             <tr>
-                <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
+                <td>
                     <p><strong><u>4.) 自我反思:</u></strong></p>
                     <p>{{ plan.self_reflection_zh }}</p>
                 </td>
@@ -362,10 +364,11 @@
 
 <!-- Action Buttons -->
 <div class="text-center mt-4 no-print">
-    <a href="{{ url_for('create_lesson_form') }}" class="btn btn-primary me-2">Create Another Plan</a>
+    <a href="{{ url_for('create_lesson_form') }}" class="btn btn-primary me-2">Create Another Lesson Plan</a>
+    <a href="{{ url_for('create_unit_form') }}" class="btn btn-primary me-2">Create Unit Plan</a>
     <button onclick="window.print()" class="btn btn-outline-primary me-2">Print Plan</button>
     <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#feedbackModal">
-        💬 Feedback
+        Feedback
     </button>
 </div>
 
