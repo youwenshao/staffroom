@@ -94,14 +94,10 @@
                 </div>
                 <div class="col-sm-2 mb-3 required-field">
                     <label class="form-label">Level</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="class_level" id="primary" value="Primary" {{ 'checked' if default_level == 'Primary' }}>
-                        <label class="form-check-label" for="primary">Primary</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="class_level" id="secondary" value="Secondary" {{ 'checked' if default_level == 'Secondary' }}>
-                        <label class="form-check-label" for="secondary">Secondary</label>
-                    </div>
+                    <select class="form-select" name="class_level" required>
+                        <option value="Primary">Primary</option>
+                        <option value="Secondary">Secondary</option>
+                    </select>
                 </div>
                 <div class="col-sm-2 mb-3">
                     <label class="form-label required-field">Class Size</label>
