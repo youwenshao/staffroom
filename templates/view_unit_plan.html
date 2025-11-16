@@ -121,20 +121,20 @@
     </table>
 
     <!-- Objectives -->
-    <h4 class="section-title">2.) Objectives for this Unit: Students will be able to -</h4>
+    <h4 class="section-title">2.) Objectives for this Unit: <i style="font-style: normal; font-size: 18pt;">Students will be able to -</i></h4>
     <table class="unit-table">
         <tbody>
             <tr>
-                <td style="width: 30%;"><strong>Psychomotor performance objectives</strong></td>
-                <td style="width: 70%;">{{ plan.psychomotor_obj }}</td>
+                <p><strong>i) Psychomotor performance objectives</strong></p>
+                <p>{{ plan.psychomotor_obj }}</p>
             </tr>
             <tr>
-                <td><strong>Cognitive performance objectives</strong></td>
-                <td>{{ plan.cognitive_obj }}</td>
+                <p><strong>ii) Cognitive performance objectives</strong></p>
+                <p>{{ plan.cognitive_obj }}</p>
             </tr>
             <tr>
-                <td><strong>Affective objectives</strong></td>
-                <td>{{ plan.affective_obj }}</td>
+                <p><strong>iii) Affective objectives</strong></p>
+                <p>{{ plan.affective_obj }}</p>
             </tr>
         </tbody>
     </table>
@@ -173,12 +173,12 @@
     <table class="unit-table">
         <tbody>
             <tr>
-                <td style="width: 40%;"><strong>Individual Differences between Students:</strong></td>
-                <td style="width: 60%;">{{ plan.individual_differences }}</td>
+                <p><strong>i) Individual Differences between Students:</strong></p>
+                <p>{{ plan.individual_differences }}</p>
             </tr>
             <tr>
-                <td><strong>Enhancing Students' Motivation in Learning:</strong></td>
-                <td>{{ plan.enhancing_motivation }}</td>
+                <p><strong>ii) Enhancing Students' Motivation in Learning:</strong></p>
+                <p>{{ plan.enhancing_motivation }}</p>
             </tr>
         </tbody>
     </table>
@@ -269,20 +269,20 @@
     </table>
 
     <!-- Chinese Objectives -->
-    <h4 class="section-title">2.) 本單元目標：學生將能</h4>
+    <h4 class="section-title">2.) 本單元目標：<i style="font-style: normal; font-size: 18pt;"></i>學生將能</i></h4>
     <table class="unit-table">
         <tbody>
             <tr>
-                <td style="width: 30%;"><strong>技能方面</strong></td>
-                <td style="width: 70%;">{{ plan.psychomotor_obj_zh }}</td>
+                <p><strong>I) 技能方面</strong></p>
+                <p>{{ plan.psychomotor_obj_zh }}</p>
             </tr>
             <tr>
-                <td><strong>認知方面</strong></td>
-                <td>{{ plan.cognitive_obj_zh }}</td>
+                <p><strong>II) 認知方面</strong></p>
+                <p>{{ plan.cognitive_obj_zh }}</p>
             </tr>
             <tr>
-                <td><strong>情意方面</strong></td>
-                <td>{{ plan.affective_obj_zh }}</td>
+                <p><strong>III) 情意方面</strong></p>
+                <p>{{ plan.affective_obj_zh }}</p>
             </tr>
         </tbody>
     </table>
@@ -321,12 +321,12 @@
     <table class="unit-table">
         <tbody>
             <tr>
-                <td style="width: 40%;"><strong>學生學習個別差異:</strong></td>
-                <td style="width: 60%;">{{ plan.individual_differences_zh }}</td>
+                <p><strong>學生學習個別差異:</strong></p>
+                <p>{{ plan.individual_differences_zh }}</p>
             </tr>
             <tr>
-                <td><strong>提升學生學習動機:</strong></td>
-                <td>{{ plan.enhancing_motivation_zh }}</td>
+                <p><strong>提升學生學習動機:</strong></p>
+                <p>{{ plan.enhancing_motivation_zh }}</p>
             </tr>
         </tbody>
     </table>
@@ -369,7 +369,7 @@
     <a href="{{ url_for('create_lesson_form') }}" class="btn btn-outline-primary me-2">Create Lesson Plan</a>
     <button onclick="window.print()" class="btn btn-outline-primary me-2">Print Plan</button>
     <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#feedbackModal">
-        💬 Feedback
+        Feedback
     </button>
 </div>
 
