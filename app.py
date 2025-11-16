@@ -45,7 +45,7 @@ def index():
 @app.route('/create-lesson', methods=['GET'])
 def create_plan_form():
     default_values = get_default_values()
-    return render_template('create_plan.html', **default_values)
+    return render_template('create_lesson_plan.html', **default_values)
 
 @app.route('/create-unit', methods=['GET'])
 def create_unit_form():
