@@ -9,6 +9,7 @@ app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB max file size
 
 # In-memory storage for lesson plans
 lesson_plans = []
+unit_plans = []
 
 # Allowed file extensions for diagrams
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg'}
@@ -32,76 +33,6 @@ def process_uploaded_file(file_field):
     
     return None
 
-def get_default_values():
-    """Return default values for the form"""
-    tomorrow = (datetime.now() + timedelta(days=1)).strftime('%d/%m/%Y')
-    
-    return {
-        # English defaults
-        'default_teacher': 'John Smith',
-        'default_pesh_year': 2,
-        'default_date': tomorrow,
-        'default_duration': 40,
-        'default_start_time': '09:00',
-        'default_end_time': '09:40',
-        'default_school': 'CUHK FED School',
-        'default_year': 5,
-        'default_class': 'A',
-        'default_level': 'Primary',
-        'default_class_size': 30,
-        'default_boys': 15,
-        'default_girls': 15,
-        'default_topic': 'Basketball Fundamentals',
-        'default_unit_duration': 5,
-        'default_day': 1,
-        'default_theme': 'Basic Dribbling Techniques',
-        'default_ability': 50,
-        'default_psychomotor': 'Students will be able to perform basic dribbling with 70% accuracy',
-        'default_cognitive': 'Students will understand the basic rules of dribbling',
-        'default_affective': 'Students will demonstrate cooperation during group activities',
-        'default_venue': 'School Sports Hall',
-        'default_equipment': 'Basketballs, cones, whistles',
-        'default_safety': 'Ensure proper spacing between students',
-        'default_intro_time': 5,
-        'default_intro_cues': 'Focus on ball control',
-        'default_intro_equip': '1 ball per student',
-        'default_sd_time': 20,
-        'default_sd_cues': 'Keep eyes up while dribbling',
-        'default_sd_equip': 'Cones for dribbling course',
-        'default_appli_time': 10,
-        'default_appli_cues': 'Apply skills in game situation',
-        'default_appli_equip': 'Small-sided game equipment',
-        'default_ca_time': 5,
-        'default_ca_cues': 'Cool down and review key points',
-        'default_ca_equip': 'None',
-        'default_followup': 'Practice stationary dribbling at home',
-        'default_reflection': 'Students responded well to visual demonstrations',
-        
-        # Chinese defaults
-        'default_teacher_zh': '張老師',
-        'default_school_zh': '香港中文大學附屬學校',
-        'default_class_zh': '甲班',
-        'default_level_zh': '小學',
-        'default_topic_zh': '籃球基礎',
-        'default_theme_zh': '基本運球技巧',
-        'default_psychomotor_zh': '學生能夠以70%的準確率完成基本運球',
-        'default_cognitive_zh': '學生將理解運球的基本規則',
-        'default_affective_zh': '學生在小組活動中展現合作精神',
-        'default_venue_zh': '學校體育館',
-        'default_equipment_zh': '籃球、雪糕筒、哨子',
-        'default_safety_zh': '確保學生之間有適當距離',
-        'default_intro_cues_zh': '專注於控球',
-        'default_intro_equip_zh': '每位學生一個籃球',
-        'default_sd_cues_zh': '運球時保持抬頭',
-        'default_sd_equip_zh': '運球路線用的雪糕筒',
-        'default_appli_cues_zh': '在比賽情境中應用技能',
-        'default_appli_equip_zh': '小型比賽設備',
-        'default_ca_cues_zh': '放鬆活動及回顧重點',
-        'default_ca_equip_zh': '不需要',
-        'default_followup_zh': '在家練習原地運球',
-        'default_reflection_zh': '學生對視覺演示反應良好'
-    }
-
 @app.context_processor
 def inject_feedback_data():
     """Make current URL available to all templates for feedback links"""
@@ -111,13 +42,18 @@ def inject_feedback_data():
 def index():
     return render_template('index.html')
 
-@app.route('/create', methods=['GET'])
+@app.route('/create-lesson', methods=['GET'])
 def create_plan_form():
     default_values = get_default_values()
     return render_template('create_plan.html', **default_values)
 
-@app.route('/create', methods=['POST'])
-def create_plan():
+@app.route('/create-unit', methods=['GET'])
+def create_unit_form():
+    default_values = get_unit_default_values()
+    return render_template('create_unit_plan.html', **default_values)
+
+@app.route('/create-lesson', methods=['POST'])
+def create_lesson():
     # Extract form data - English fields
     teacher_name = request.form.get('teacher_name')
     pesh_year = request.form.get('pesh_year')
@@ -272,14 +208,142 @@ def create_plan():
     # Redirect to view the plan
     return redirect(url_for('view_plan', plan_id=new_plan['id']))
 
-@app.route('/plan/<int:plan_id>')
-def view_plan(plan_id):
-    # Find the plan with the matching ID
+@app.route('/create-unit', methods=['POST'])
+def create_unit():
+    # Extract unit plan data
+    unit_data = {
+        'id': len(unit_plans) + 1,
+        'unit_topic': request.form.get('unit_topic'),
+        'number_of_lessons': request.form.get('number_of_lessons'),
+        'period': request.form.get('period'),
+        'class_info': request.form.get('class_info'),
+        'class_size': request.form.get('class_size'),
+        'venue': request.form.get('venue'),
+        'equipment': request.form.get('equipment'),
+        'unit_overview': request.form.get('unit_overview'),
+        'skills_topics': request.form.get('skills_topics'),
+        'movement_concepts': request.form.get('movement_concepts'),
+        'previous_knowledge': request.form.get('previous_knowledge'),
+        'learning_outcomes': request.form.get('learning_outcomes'),
+        'assessments': request.form.get('assessments'),
+        'psychomotor_obj': request.form.get('psychomotor_obj'),
+        'cognitive_obj': request.form.get('cognitive_obj'),
+        'affective_obj': request.form.get('affective_obj'),
+        'psychomotor_chars': request.form.get('psychomotor_chars'),
+        'cognitive_chars': request.form.get('cognitive_chars'),
+        'affective_chars': request.form.get('affective_chars'),
+        'psychomotor_notes': request.form.get('psychomotor_notes'),
+        'cognitive_notes': request.form.get('cognitive_notes'),
+        'affective_notes': request.form.get('affective_notes'),
+        'individual_differences': request.form.get('individual_differences'),
+        'enhancing_motivation': request.form.get('enhancing_motivation'),
+        'safety_precautions': request.form.get('safety_precautions'),
+        'unit_contents': [],  # This would handle multiple days
+        'other_considerations': request.form.get('other_considerations'),
+        # Chinese fields
+        'unit_topic_zh': request.form.get('unit_topic_zh'),
+        # ... add other Chinese fields
+    }
+    
+    unit_plans.append(unit_data)
+    return redirect(url_for('view_unit_plan', plan_id=unit_data['id']))
+
+@app.route('/lesson/<int:plan_id>')
+def view_lesson_plan(plan_id):
     plan = next((p for p in lesson_plans if p['id'] == plan_id), None)
     if plan is None:
         return "Plan not found!", 404
+    return render_template('view_lesson_plan.html', plan=plan)
+
+@app.route('/unit/<int:plan_id>')
+def view_unit_plan(plan_id):
+    plan = next((p for p in unit_plans if p['id'] == plan_id), None)
+    if plan is None:
+        return "Plan not found!", 404
+    return render_template('view_unit_plan.html', plan=plan)
+
+def get_lesson_default_values():
+    """Return default values for the form"""
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime('%d/%m/%Y')
     
-    return render_template('view_plan.html', plan=plan)
+    return {
+        # English defaults
+        'default_teacher': 'John Smith',
+        'default_pesh_year': 2,
+        'default_date': tomorrow,
+        'default_duration': 40,
+        'default_start_time': '09:00',
+        'default_end_time': '09:40',
+        'default_school': 'CUHK FED School',
+        'default_year': 5,
+        'default_class': 'A',
+        'default_level': 'Primary',
+        'default_class_size': 30,
+        'default_boys': 15,
+        'default_girls': 15,
+        'default_topic': 'Basketball Fundamentals',
+        'default_unit_duration': 5,
+        'default_day': 1,
+        'default_theme': 'Basic Dribbling Techniques',
+        'default_ability': 50,
+        'default_psychomotor': 'Students will be able to perform basic dribbling with 70% accuracy',
+        'default_cognitive': 'Students will understand the basic rules of dribbling',
+        'default_affective': 'Students will demonstrate cooperation during group activities',
+        'default_venue': 'School Sports Hall',
+        'default_equipment': 'Basketballs, cones, whistles',
+        'default_safety': 'Ensure proper spacing between students',
+        'default_intro_time': 5,
+        'default_intro_cues': 'Focus on ball control',
+        'default_intro_equip': '1 ball per student',
+        'default_sd_time': 20,
+        'default_sd_cues': 'Keep eyes up while dribbling',
+        'default_sd_equip': 'Cones for dribbling course',
+        'default_appli_time': 10,
+        'default_appli_cues': 'Apply skills in game situation',
+        'default_appli_equip': 'Small-sided game equipment',
+        'default_ca_time': 5,
+        'default_ca_cues': 'Cool down and review key points',
+        'default_ca_equip': 'None',
+        'default_followup': 'Practice stationary dribbling at home',
+        'default_reflection': 'Students responded well to visual demonstrations',
+        
+        # Chinese defaults
+        'default_teacher_zh': '張老師',
+        'default_school_zh': '香港中文大學附屬學校',
+        'default_class_zh': '甲班',
+        'default_level_zh': '小學',
+        'default_topic_zh': '籃球基礎',
+        'default_theme_zh': '基本運球技巧',
+        'default_psychomotor_zh': '學生能夠以70%的準確率完成基本運球',
+        'default_cognitive_zh': '學生將理解運球的基本規則',
+        'default_affective_zh': '學生在小組活動中展現合作精神',
+        'default_venue_zh': '學校體育館',
+        'default_equipment_zh': '籃球、雪糕筒、哨子',
+        'default_safety_zh': '確保學生之間有適當距離',
+        'default_intro_cues_zh': '專注於控球',
+        'default_intro_equip_zh': '每位學生一個籃球',
+        'default_sd_cues_zh': '運球時保持抬頭',
+        'default_sd_equip_zh': '運球路線用的雪糕筒',
+        'default_appli_cues_zh': '在比賽情境中應用技能',
+        'default_appli_equip_zh': '小型比賽設備',
+        'default_ca_cues_zh': '放鬆活動及回顧重點',
+        'default_ca_equip_zh': '不需要',
+        'default_followup_zh': '在家練習原地運球',
+        'default_reflection_zh': '學生對視覺演示反應良好'
+    }
+
+def get_unit_default_values():
+    tomorrow = (datetime.now() + timedelta(days=1)).strftime('%d/%m/%Y')
+    return {
+        'default_unit_topic': 'Basketball Fundamentals Unit',
+        'default_number_lessons': 5,
+        'default_period': f"{tomorrow} to {(datetime.now() + timedelta(days=30)).strftime('%d/%m/%Y')}",
+        'default_class': '5A',
+        'default_class_size': 30,
+        'default_venue': 'School Sports Hall',
+        'default_equipment': 'Basketballs, cones, whistles, bibs',
+        # Add more defaults as needed
+    }
 
 if __name__ == '__main__':
     app.run(debug=True)
