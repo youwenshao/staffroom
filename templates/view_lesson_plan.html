@@ -4,12 +4,6 @@
 
 {% block styles %}
 <style>
-    .print-btn {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 100;
-    }
     .success-message {
         background-color: #d4edda;
         border-left: 4px solid #28a745;
@@ -29,11 +23,37 @@
             border: 1px solid black;
         }
     }
+    .print-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+    }
     .lesson-section {
         margin-bottom: 2rem;
     }
     .chinese-section {
         font-family: "Microsoft JhengHei", "PMingLiU", sans-serif;
+    }
+    .lesson-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+    }
+    .lesson-table th,
+    .lesson-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+    }
+    .lesson-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+    .section-title {
+        padding-bottom: 0.5rem;
+        margin: 2rem 0 1rem 0;
     }
 </style>
 {% endblock %}
@@ -54,21 +74,19 @@
         <strong><u><span>Lesson Plan</span></u></strong>
     </p>
     
-    <!-- English content remains the same but cleaned up -->
-    <p>Plan ID: {{ plan.id }}</p>
-    <p></p>
-
+    <!-- Basic Information -->
+    <p><strong>Plan ID:</strong> {{ plan.id }}</p>
     <p><strong>Student-teacher's name:</strong> {{ plan.teacher_name }} (PESH Year {{ plan.pesh_year }})</p>
     <p><strong>Date:</strong> {{ plan.date }} <strong>Time:</strong> {{ plan.class_duration }} mins ({{ plan.start_time }} to {{ plan.end_time }})</p>
     <p><strong>School Name:</strong> {{ plan.school_name }}</p>
-    <p><strong>Year:</strong> {{ plan.year }} <strong>Class: </strong>{{ plan.class_id }} <strong>Level: </strong>{{ plan.class_level }} <strong>Class Size: </strong>{{ plan.class_size }} ( Boys: {{ plan.boys }} Girls: {{ plan.girls }} )</p>
+    <p><strong>Year:</strong> {{ plan.year }} <strong>Class: </strong>{{ plan.class_id }} <strong>Level: </strong>{{ plan.class_level }} <strong>Class Size: </strong>{{ plan.class_size }} (Boys: {{ plan.boys }} Girls: {{ plan.girls }})</p>
     <p><strong>Unit Topic: </strong>{{ plan.topic }} (Day {{ plan.day_of_unit }} of {{ plan.unit_duration }} days of the Unit)</p>
     <p><strong>Main Theme of this Lesson:</strong> {{ plan.lesson_theme }}</p>
     <p><strong>Students' Ability Level:</strong> {{ plan.ability_level }}% proficiency</p>
     <p></p>
 
     <!-- Objectives Table -->
-    <table class="table-bordered" style="width: 100%; border-collapse: collapse;">
+    <table class="lesson-table">
         <tbody>
             <tr>
                 <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
@@ -102,7 +120,7 @@
 <div class="lesson-section">
     <p><strong><u>2.) Lesson Planning:</u></strong></p>
     
-    <table class="table-bordered" style="width: 100%; border-collapse: collapse;">
+    <table class="lesson-table">
         <thead>
             <tr>
                 <th style="width: 8%;">Time</th>
@@ -216,7 +234,7 @@
     <p></p>
 
     <!-- Chinese Objectives Table -->
-    <table class="table-bordered" style="width: 100%; border-collapse: collapse;">
+    <table class="lesson-table">
         <tbody>
             <tr>
                 <td style="border: 0.75pt solid #000; padding: 5pt; vertical-align: top;">
@@ -250,7 +268,7 @@
 <div class="lesson-section chinese-section">
     <p><strong><u>2.) 教案規劃:</u></strong></p>
     
-    <table class="table-bordered" style="width: 100%; border-collapse: collapse;">
+    <table class="lesson-table">
         <thead>
             <tr>
                 <th style="width: 8%;">時間</th>
