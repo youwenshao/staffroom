@@ -1,0 +1,385 @@
+<!-- templates/view_unit_plan.html -->
+{% extends "base.html" %}
+
+{% block title %}Unit Plan: {{ plan.unit_topic }} - CUHK PE Planner{% endblock %}
+
+{% block styles %}
+<style>
+    .print-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+    }
+    .success-message {
+        background-color: #d4edda;
+        border-left: 4px solid #28a745;
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+    @media print {
+        .no-print {
+            display: none;
+        }
+        .page, .page-break { break-after: page; }
+        body {
+            font-size: 12pt;
+            color: black;
+        }
+        .card {
+            border: 1px solid black;
+        }
+    }
+    .unit-section {
+        margin-bottom: 2rem;
+    }
+    .chinese-section {
+        font-family: "Microsoft JhengHei", "PMingLiU", sans-serif;
+    }
+    .unit-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+    }
+    .unit-table th,
+    .unit-table td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+    }
+    .unit-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+    .section-title {
+        color: #DDA52D;
+        border-bottom: 2px solid #DDA52D;
+        padding-bottom: 0.5rem;
+        margin: 2rem 0 1rem 0;
+    }
+    .chinese-section .section-title {
+        color: #69256B;
+        border-bottom: 2px solid #69256B;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Success Message with Feedback Prompt -->
+<div class="success-message no-print">
+    <h5>Unit plan created successfully!</h5>
+    <p>How was your experience?
+       <a href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal" class="text-decoration-none">Tell us what you think</a> 
+       to help us improve our platform!
+    </p>
+</div>
+
+<!-- ENGLISH UNIT PLAN -->
+<div class="unit-section">
+    <p style="margin-top:0pt; margin-bottom:0pt; text-align:center; line-height:18pt;">
+        <strong><u>Unit Plan</u></strong>
+    </p>
+    
+    <!-- Basic Information -->
+    <p><strong>Unit ID:</strong> {{ plan.id }}</p>
+    <p><strong>Unit/Topic:</strong> {{ plan.unit_topic }}</p>
+    <p><strong>Number of Lessons:</strong> {{ plan.number_of_lessons }}</p>
+    <p><strong>Period:</strong> {{ plan.period }}</p>
+    <p><strong>Class:</strong> {{ plan.class_info }} 
+       <strong>Level:</strong> {{ plan.class_level }} 
+       <strong>Class Size:</strong> {{ plan.class_size }} 
+       {% if plan.boys or plan.girls %}
+       (Boys: {{ plan.boys }} Girls: {{ plan.girls }})
+       {% endif %}
+    </p>
+    <p><strong>Teaching Venue/Facilities:</strong> {{ plan.venue }}</p>
+    <p><strong>Equipment:</strong> {{ plan.equipment }}</p>
+
+    <!-- Unit Overview -->
+    <h4 class="section-title">1.) Unit Overview</h4>
+    <p><strong>Overview:</strong> {{ plan.unit_overview }}</p>
+
+    <!-- Unit Details Table -->
+    <table class="unit-table">
+        <tbody>
+            <tr>
+                <td style="width: 30%;"><strong>Skills/Topics to be taught:</strong></td>
+                <td style="width: 70%;">{{ plan.skills_topics }}</td>
+            </tr>
+            <tr>
+                <td><strong>Movement Concepts:</strong></td>
+                <td>{{ plan.movement_concepts }}</td>
+            </tr>
+            <tr>
+                <td><strong>Student's Previous Knowledge:</strong></td>
+                <td>{{ plan.previous_knowledge }}</td>
+            </tr>
+            <tr>
+                <td><strong>Expected Learning Outcomes:</strong></td>
+                <td>{{ plan.learning_outcomes }}</td>
+            </tr>
+            <tr>
+                <td><strong>Assessments:</strong></td>
+                <td>{{ plan.assessments }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Objectives -->
+    <h4 class="section-title">2.) Objectives for this Unit: Students will be able to -</h4>
+    <table class="unit-table">
+        <tbody>
+            <tr>
+                <td style="width: 30%;"><strong>Psychomotor performance objectives</strong></td>
+                <td style="width: 70%;">{{ plan.psychomotor_obj }}</td>
+            </tr>
+            <tr>
+                <td><strong>Cognitive performance objectives</strong></td>
+                <td>{{ plan.cognitive_obj }}</td>
+            </tr>
+            <tr>
+                <td><strong>Affective objectives</strong></td>
+                <td>{{ plan.affective_obj }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Student Characteristics -->
+    <h4 class="section-title">3.) Student Characteristics</h4>
+    <table class="unit-table">
+        <thead>
+            <tr>
+                <th style="width: 20%;">Domain</th>
+                <th style="width: 40%;">Characteristics</th>
+                <th style="width: 40%;">Matters to be Noted</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Psychomotor</strong></td>
+                <td>{{ plan.psychomotor_chars }}</td>
+                <td>{{ plan.psychomotor_notes }}</td>
+            </tr>
+            <tr>
+                <td><strong>Cognitive</strong></td>
+                <td>{{ plan.cognitive_chars }}</td>
+                <td>{{ plan.cognitive_notes }}</td>
+            </tr>
+            <tr>
+                <td><strong>Affective</strong></td>
+                <td>{{ plan.affective_chars }}</td>
+                <td>{{ plan.affective_notes }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Approaches -->
+    <h4 class="section-title">4.) Approaches/Ways to Handle</h4>
+    <table class="unit-table">
+        <tbody>
+            <tr>
+                <td style="width: 40%;"><strong>Individual Differences between Students:</strong></td>
+                <td style="width: 60%;">{{ plan.individual_differences }}</td>
+            </tr>
+            <tr>
+                <td><strong>Enhancing Students' Motivation in Learning:</strong></td>
+                <td>{{ plan.enhancing_motivation }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Safety -->
+    <h4 class="section-title">Safety Precautions</h4>
+    <p>{{ plan.safety_precautions }}</p>
+
+    <!-- Unit Contents -->
+    <h4 class="section-title">5.) Unit Contents</h4>
+    <table class="unit-table">
+        <thead>
+            <tr>
+                <th style="width: 10%;">Day</th>
+                <th style="width: 15%;">Date</th>
+                <th style="width: 35%;">Theme & Content</th>
+                <th style="width: 40%;">Learning Activities</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for day in plan.unit_contents %}
+            <tr>
+                <td><strong>{{ day.day }}</strong></td>
+                <td>{{ day.date }}</td>
+                <td>{{ day.theme }}</td>
+                <td>{{ day.activities }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Other Considerations -->
+    <h4 class="section-title">6.) Other Considerations</h4>
+    <p>{{ plan.other_considerations }}</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- CHINESE UNIT PLAN -->
+<div class="unit-section chinese-section">
+    <p style="text-align: center; line-height: 18pt;">
+        <strong><u>單元計劃</u></strong>
+    </p>
+    
+    <!-- Chinese Basic Information -->
+    <p><strong>單元編號:</strong> {{ plan.id }}</p>
+    <p><strong>單元/主題:</strong> {{ plan.unit_topic_zh }}</p>
+    <p><strong>課節總數:</strong> {{ plan.number_of_lessons_zh }}</p>
+    <p><strong>期間:</strong> {{ plan.period_zh }}</p>
+    <p><strong>班級:</strong> {{ plan.class_info_zh }} 
+       <strong>級別:</strong> {{ plan.class_level_zh }} 
+       <strong>學生人數:</strong> {{ plan.class_size_zh }} 
+       {% if plan.boys_zh or plan.girls_zh %}
+       (男生: {{ plan.boys_zh }} 女生: {{ plan.girls_zh }})
+       {% endif %}
+    </p>
+    <p><strong>教學場地/設施:</strong> {{ plan.venue_zh }}</p>
+    <p><strong>器材/用具:</strong> {{ plan.equipment_zh }}</p>
+
+    <!-- Chinese Unit Overview -->
+    <h4 class="section-title">1.) 單元概述</h4>
+    <p><strong>概述:</strong> {{ plan.unit_overview_zh }}</p>
+
+    <!-- Chinese Unit Details Table -->
+    <table class="unit-table">
+        <tbody>
+            <tr>
+                <td style="width: 30%;"><strong>單元教學重點:</strong></td>
+                <td style="width: 70%;">{{ plan.skills_topics_zh }}</td>
+            </tr>
+            <tr>
+                <td><strong>單元所需的動作概念:</strong></td>
+                <td>{{ plan.movement_concepts_zh }}</td>
+            </tr>
+            <tr>
+                <td><strong>學生已有知識:</strong></td>
+                <td>{{ plan.previous_knowledge_zh }}</td>
+            </tr>
+            <tr>
+                <td><strong>預期的學生學習成果:</strong></td>
+                <td>{{ plan.learning_outcomes_zh }}</td>
+            </tr>
+            <tr>
+                <td><strong>評核（如有）:</strong></td>
+                <td>{{ plan.assessments_zh }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Chinese Objectives -->
+    <h4 class="section-title">2.) 本單元目標：學生將能</h4>
+    <table class="unit-table">
+        <tbody>
+            <tr>
+                <td style="width: 30%;"><strong>技能方面</strong></td>
+                <td style="width: 70%;">{{ plan.psychomotor_obj_zh }}</td>
+            </tr>
+            <tr>
+                <td><strong>認知方面</strong></td>
+                <td>{{ plan.cognitive_obj_zh }}</td>
+            </tr>
+            <tr>
+                <td><strong>情意方面</strong></td>
+                <td>{{ plan.affective_obj_zh }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Chinese Student Characteristics -->
+    <h4 class="section-title">3.) 學生特徵</h4>
+    <table class="unit-table">
+        <thead>
+            <tr>
+                <th style="width: 20%;">範疇</th>
+                <th style="width: 40%;">特徵</th>
+                <th style="width: 40%;">注意事項</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>技能</strong></td>
+                <td>{{ plan.psychomotor_chars_zh }}</td>
+                <td>{{ plan.psychomotor_notes_zh }}</td>
+            </tr>
+            <tr>
+                <td><strong>認知</strong></td>
+                <td>{{ plan.cognitive_chars_zh }}</td>
+                <td>{{ plan.cognitive_notes_zh }}</td>
+            </tr>
+            <tr>
+                <td><strong>情意</strong></td>
+                <td>{{ plan.affective_chars_zh }}</td>
+                <td>{{ plan.affective_notes_zh }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Chinese Approaches -->
+    <h4 class="section-title">4.) 處理方法</h4>
+    <table class="unit-table">
+        <tbody>
+            <tr>
+                <td style="width: 40%;"><strong>學生學習個別差異:</strong></td>
+                <td style="width: 60%;">{{ plan.individual_differences_zh }}</td>
+            </tr>
+            <tr>
+                <td><strong>提升學生學習動機:</strong></td>
+                <td>{{ plan.enhancing_motivation_zh }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Chinese Safety -->
+    <h4 class="section-title">安全注意事項</h4>
+    <p>{{ plan.safety_precautions_zh }}</p>
+
+    <!-- Chinese Unit Contents -->
+    <h4 class="section-title">5.) 單元內容</h4>
+    <table class="unit-table">
+        <thead>
+            <tr>
+                <th style="width: 10%;">課節</th>
+                <th style="width: 15%;">日期</th>
+                <th style="width: 35%;">主題與內容</th>
+                <th style="width: 40%;">活動內容</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for day in plan.unit_contents_zh %}
+            <tr>
+                <td><strong>{{ day.day }}</strong></td>
+                <td>{{ day.date }}</td>
+                <td>{{ day.theme }}</td>
+                <td>{{ day.activities }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Chinese Other Considerations -->
+    <h4 class="section-title">6.) 其他注意事項</h4>
+    <p>{{ plan.other_considerations_zh }}</p>
+</div>
+
+<!-- Action Buttons -->
+<div class="text-center mt-4 no-print">
+    <a href="{{ url_for('create_unit_form') }}" class="btn btn-primary me-2">Create Another Unit Plan</a>
+    <a href="{{ url_for('create_lesson_form') }}" class="btn btn-outline-primary me-2">Create Lesson Plan</a>
+    <button onclick="window.print()" class="btn btn-outline-primary me-2">Print Plan</button>
+    <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+        💬 Feedback
+    </button>
+</div>
+
+<button onclick="window.print()" class="btn btn-primary print-btn no-print">
+    📄 Print
+</button>
+{% endblock %}

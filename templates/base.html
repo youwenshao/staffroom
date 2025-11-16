@@ -12,20 +12,25 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">staffroom</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{{ url_for('index') }}">Home</a>
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        Create Plan
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Create Plan
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('create_lesson_form') }}">Lesson Plan</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('create_unit_form') }}">Unit Plan</a></li>
+                        </ul>
+                    </div>
+                    <a class="nav-link feedback-link" href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal">
+                        Feedback
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ url_for('create_lesson_form') }}">Lesson Plan</a></li>
-                        <li><a class="dropdown-item" href="{{ url_for('create_unit_form') }}">Unit Plan</a></li>
-                    </ul>
                 </div>
-                <a class="nav-link feedback-link" href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal">
-                    Feedback
-                </a>
             </div>
         </div>
     </nav>
