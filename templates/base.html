@@ -14,7 +14,15 @@
             <a class="navbar-brand" href="{{ url_for('index') }}">staffroom</a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link" href="{{ url_for('index') }}">Home</a>
-                <a class="nav-link" href="{{ url_for('create_plan_form') }}">Create Plan</a>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Create Plan
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('create_lesson_form') }}">Lesson Plan</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('create_unit_form') }}">Unit Plan</a></li>
+                    </ul>
+                </div>
                 <a class="nav-link feedback-link" href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal">
                     Feedback
                 </a>

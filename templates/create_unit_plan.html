@@ -1,0 +1,81 @@
+<!-- templates/create_unit_plan.html -->
+{% extends "base.html" %}
+
+{% block title %}Create Unit Plan - staffroom{% endblock %}
+
+{% block styles %}
+<style>
+    .form-container {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .form-section {
+        margin-bottom: 2rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 5px;
+        border-left: 4px solid #DDA52D;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h2 class="text-center mb-4">Create a New Unit Plan</h2>
+
+<div class="form-container">
+    <form method="POST" action="{{ url_for('create_unit') }}">
+        
+        <!-- Basic Information -->
+        <div class="form-section">
+            <h4 class="text-primary">Basic Information</h4>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Unit/Topic</label>
+                    <input type="text" class="form-control" name="unit_topic" value="{{ default_unit_topic }}" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Number of Lessons</label>
+                    <input type="number" class="form-control" name="number_of_lessons" value="{{ default_number_lessons }}" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Class Size</label>
+                    <input type="number" class="form-control" name="class_size" value="{{ default_class_size }}" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Period</label>
+                    <input type="text" class="form-control" name="period" value="{{ default_period }}" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Class</label>
+                    <input type="text" class="form-control" name="class_info" value="{{ default_class }}" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unit Overview -->
+        <div class="form-section">
+            <h4 class="text-primary">Unit Overview</h4>
+            <div class="mb-3">
+                <label class="form-label">Skills/Topics to be taught</label>
+                <textarea class="form-control" name="skills_topics" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Movement Concepts</label>
+                <textarea class="form-control" name="movement_concepts" rows="3"></textarea>
+            </div>
+            <!-- Add more overview fields as needed -->
+        </div>
+
+        <!-- Add more sections following the unit plan structure -->
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">Cancel</a>
+            <button type="submit" class="btn btn-primary">Generate Unit Plan</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
