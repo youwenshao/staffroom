@@ -213,11 +213,17 @@ def create_unit():
     # Extract unit plan data
     unit_data = {
         'id': len(unit_plans) + 1,
+        'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        
+        # English fields
         'unit_topic': request.form.get('unit_topic'),
         'number_of_lessons': request.form.get('number_of_lessons'),
         'period': request.form.get('period'),
         'class_info': request.form.get('class_info'),
+        'class_level': request.form.get('class_level'),
         'class_size': request.form.get('class_size'),
+        'boys': request.form.get('boys'),
+        'girls': request.form.get('girls'),
         'venue': request.form.get('venue'),
         'equipment': request.form.get('equipment'),
         'unit_overview': request.form.get('unit_overview'),
@@ -238,12 +244,65 @@ def create_unit():
         'individual_differences': request.form.get('individual_differences'),
         'enhancing_motivation': request.form.get('enhancing_motivation'),
         'safety_precautions': request.form.get('safety_precautions'),
-        'unit_contents': [],  # This would handle multiple days
         'other_considerations': request.form.get('other_considerations'),
-        # Chinese fields
-        'unit_topic_zh': request.form.get('unit_topic_zh'),
-        # ... add other Chinese fields
+        
+        # Unit contents for 5 days
+        'unit_contents': []
     }
+    
+    # Add unit contents for each day
+    for day in range(1, 6):
+        day_data = {
+            'day': day,
+            'date': request.form.get(f'day_{day}_date'),
+            'theme': request.form.get(f'day_{day}_theme'),
+            'activities': request.form.get(f'day_{day}_activities')
+        }
+        unit_data['unit_contents'].append(day_data)
+    
+    # Chinese fields
+    unit_data.update({
+        'unit_topic_zh': request.form.get('unit_topic_zh'),
+        'number_of_lessons_zh': request.form.get('number_of_lessons_zh'),
+        'period_zh': request.form.get('period_zh'),
+        'class_info_zh': request.form.get('class_info_zh'),
+        'class_level_zh': request.form.get('class_level_zh'),
+        'class_size_zh': request.form.get('class_size_zh'),
+        'boys_zh': request.form.get('boys_zh'),
+        'girls_zh': request.form.get('girls_zh'),
+        'venue_zh': request.form.get('venue_zh'),
+        'equipment_zh': request.form.get('equipment_zh'),
+        'unit_overview_zh': request.form.get('unit_overview_zh'),
+        'skills_topics_zh': request.form.get('skills_topics_zh'),
+        'movement_concepts_zh': request.form.get('movement_concepts_zh'),
+        'previous_knowledge_zh': request.form.get('previous_knowledge_zh'),
+        'learning_outcomes_zh': request.form.get('learning_outcomes_zh'),
+        'assessments_zh': request.form.get('assessments_zh'),
+        'psychomotor_obj_zh': request.form.get('psychomotor_obj_zh'),
+        'cognitive_obj_zh': request.form.get('cognitive_obj_zh'),
+        'affective_obj_zh': request.form.get('affective_obj_zh'),
+        'psychomotor_chars_zh': request.form.get('psychomotor_chars_zh'),
+        'cognitive_chars_zh': request.form.get('cognitive_chars_zh'),
+        'affective_chars_zh': request.form.get('affective_chars_zh'),
+        'psychomotor_notes_zh': request.form.get('psychomotor_notes_zh'),
+        'cognitive_notes_zh': request.form.get('cognitive_notes_zh'),
+        'affective_notes_zh': request.form.get('affective_notes_zh'),
+        'individual_differences_zh': request.form.get('individual_differences_zh'),
+        'enhancing_motivation_zh': request.form.get('enhancing_motivation_zh'),
+        'safety_precautions_zh': request.form.get('safety_precautions_zh'),
+        'other_considerations_zh': request.form.get('other_considerations_zh'),
+    })
+
+        # Add Chinese unit contents
+    unit_data['unit_contents_zh'] = []
+    for day in range(1, 6):
+        day_data_zh = {
+            'day': day,
+            'date': request.form.get(f'day_{day}_date_zh'),
+            'theme': request.form.get(f'day_{day}_theme_zh'),
+            'activities': request.form.get(f'day_{day}_activities_zh')
+        }
+        unit_data['unit_contents_zh'].append(day_data_zh)
     
     unit_plans.append(unit_data)
     return redirect(url_for('view_unit_plan', plan_id=unit_data['id']))
@@ -333,16 +392,28 @@ def get_lesson_default_values():
     }
 
 def get_unit_default_values():
+    """Return default values for unit plan form"""
     tomorrow = (datetime.now() + timedelta(days=1)).strftime('%d/%m/%Y')
+    end_date = (datetime.now() + timedelta(days=30)).strftime('%d/%m/%Y')
+    
     return {
+        # English defaults
         'default_unit_topic': 'Basketball Fundamentals Unit',
         'default_number_lessons': 5,
-        'default_period': f"{tomorrow} to {(datetime.now() + timedelta(days=30)).strftime('%d/%m/%Y')}",
+        'default_period': f"{tomorrow} to {end_date}",
         'default_class': '5A',
         'default_class_size': 30,
+        'default_boys': 15,
+        'default_girls': 15,
         'default_venue': 'School Sports Hall',
         'default_equipment': 'Basketballs, cones, whistles, bibs',
-        # Add more defaults as needed
+        
+        # Chinese defaults
+        'default_unit_topic_zh': '籃球基礎單元',
+        'default_period_zh': f"{tomorrow} 至 {end_date}",
+        'default_class_zh': '五甲班',
+        'default_venue_zh': '學校體育館',
+        'default_equipment_zh': '籃球、雪糕筒、哨子、號碼衣'
     }
 
 if __name__ == '__main__':

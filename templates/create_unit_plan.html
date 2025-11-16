@@ -13,10 +13,35 @@
     }
     .form-section {
         margin-bottom: 2rem;
-        padding: 1rem;
+        padding: 1.5rem;
         background: white;
-        border-radius: 5px;
+        border-radius: 8px;
         border-left: 4px solid #DDA52D;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .chinese-section {
+        border-left: 4px solid #69256B;
+    }
+    .form-section-title {
+        color: #DDA52D;
+        border-bottom: 2px solid #DDA52D;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+    }
+    .chinese-section .form-section-title {
+        color: #69256B;
+        border-bottom: 2px solid #69256B;
+    }
+    .required-field::after {
+        content: " *";
+        color: red;
+    }
+    .table-section {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 5px;
+        margin-bottom: 1rem;
     }
 </style>
 {% endblock %}
@@ -27,50 +52,413 @@
 <div class="form-container">
     <form method="POST" action="{{ url_for('create_unit') }}">
         
-        <!-- Basic Information -->
+        <!-- ENGLISH UNIT PLAN SECTION -->
         <div class="form-section">
-            <h4 class="text-primary">Basic Information</h4>
-            <div class="row">
+            <h4 class="form-section-title">English Version</h4>
+            
+            <!-- Basic Information -->
+            <div class="row mb-4">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Unit/Topic</label>
+                    <label class="form-label required-field">Unit/Topic</label>
                     <input type="text" class="form-control" name="unit_topic" value="{{ default_unit_topic }}" required>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <label class="form-label">Number of Lessons</label>
+                    <label class="form-label required-field">Number of Lessons</label>
                     <input type="number" class="form-control" name="number_of_lessons" value="{{ default_number_lessons }}" required>
                 </div>
                 <div class="col-md-3 mb-3">
-                    <label class="form-label">Class Size</label>
+                    <label class="form-label required-field">Class Size</label>
                     <input type="number" class="form-control" name="class_size" value="{{ default_class_size }}" required>
                 </div>
             </div>
-            <div class="row">
+
+            <div class="row mb-4">
                 <div class="col-md-6 mb-3">
-                    <label class="form-label">Period</label>
-                    <input type="text" class="form-control" name="period" value="{{ default_period }}" required>
+                    <label class="form-label required-field">Period</label>
+                    <input type="text" class="form-control" name="period" placeholder="DD/MM/YYYY to DD/MM/YYYY" value="{{ default_period }}" required>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Class</label>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label required-field">Class</label>
                     <input type="text" class="form-control" name="class_info" value="{{ default_class }}" required>
                 </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label required-field">Level</label>
+                    <select class="form-select" name="class_level" required>
+                        <option value="Primary">Primary</option>
+                        <option value="Secondary">Secondary</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Gender Breakdown</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="number" class="form-control" name="boys" placeholder="Boys" value="{{ default_boys }}">
+                        </div>
+                        <div class="col-6">
+                            <input type="number" class="form-control" name="girls" placeholder="Girls" value="{{ default_girls }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Teaching Venue/Facilities</label>
+                    <input type="text" class="form-control" name="venue" value="{{ default_venue }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Equipment</label>
+                    <input type="text" class="form-control" name="equipment" value="{{ default_equipment }}">
+                </div>
+            </div>
+
+            <!-- Unit Overview -->
+            <div class="mb-4">
+                <label class="form-label required-field">Unit Overview</label>
+                <textarea class="form-control" name="unit_overview" rows="3" required></textarea>
+            </div>
+
+            <!-- Skills and Concepts Table -->
+            <div class="table-section">
+                <h6>Unit Details</h6>
+                <div class="mb-3">
+                    <label class="form-label">Skills/Topics to be taught</label>
+                    <textarea class="form-control" name="skills_topics" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Movement Concepts (Body, Space, Time, Efforts)</label>
+                    <textarea class="form-control" name="movement_concepts" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Student's Previous Knowledge</label>
+                    <textarea class="form-control" name="previous_knowledge" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Expected Learning Outcomes</label>
+                    <textarea class="form-control" name="learning_outcomes" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Assessments</label>
+                    <textarea class="form-control" name="assessments" rows="2"></textarea>
+                </div>
+            </div>
+
+            <!-- Objectives -->
+            <div class="table-section">
+                <h6>Unit Objectives - Students will be able to:</h6>
+                <div class="mb-3">
+                    <label class="form-label">Psychomotor Performance Objectives</label>
+                    <textarea class="form-control" name="psychomotor_obj" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Cognitive Performance Objectives</label>
+                    <textarea class="form-control" name="cognitive_obj" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Affective Objectives</label>
+                    <textarea class="form-control" name="affective_obj" rows="2"></textarea>
+                </div>
+            </div>
+
+            <!-- Student Characteristics -->
+            <div class="table-section">
+                <h6>Student Characteristics</h6>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>Domain</strong></div>
+                    <div class="col-md-4"><strong>Characteristics</strong></div>
+                    <div class="col-md-4"><strong>Matters to be Noted</strong></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Psychomotor</label>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="psychomotor_chars" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="psychomotor_notes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Cognitive</label>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="cognitive_chars" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="cognitive_notes" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Affective</label>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="affective_chars" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="affective_notes" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approaches -->
+            <div class="table-section">
+                <h6>Approaches/Ways to Handle</h6>
+                <div class="mb-3">
+                    <label class="form-label">Individual Differences between Students</label>
+                    <textarea class="form-control" name="individual_differences" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Enhancing Students' Motivation in Learning</label>
+                    <textarea class="form-control" name="enhancing_motivation" rows="2"></textarea>
+                </div>
+            </div>
+
+            <!-- Safety -->
+            <div class="mb-4">
+                <label class="form-label">Safety Precautions</label>
+                <textarea class="form-control" name="safety_precautions" rows="2"></textarea>
+            </div>
+
+            <!-- Unit Contents (Multiple Days) -->
+            <div class="table-section">
+                <h6>Unit Contents</h6>
+                <p class="text-muted small">Add details for each lesson in the unit</p>
+                
+                {% for day in range(1, 6) %}
+                <div class="day-section mb-4 p-3 border rounded">
+                    <h6>Day {{ day }}</h6>
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input type="text" class="form-control" name="day_{{ day }}_date" placeholder="DD/MM/YYYY">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Theme & Content</label>
+                        <textarea class="form-control" name="day_{{ day }}_theme" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Learning Activities</label>
+                        <textarea class="form-control" name="day_{{ day }}_activities" rows="2"></textarea>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Other Considerations -->
+            <div class="mb-4">
+                <label class="form-label">Other Considerations</label>
+                <textarea class="form-control" name="other_considerations" rows="3"></textarea>
             </div>
         </div>
 
-        <!-- Unit Overview -->
-        <div class="form-section">
-            <h4 class="text-primary">Unit Overview</h4>
-            <div class="mb-3">
-                <label class="form-label">Skills/Topics to be taught</label>
-                <textarea class="form-control" name="skills_topics" rows="3"></textarea>
+        <!-- CHINESE UNIT PLAN SECTION -->
+        <div class="form-section chinese-section">
+            <h4 class="form-section-title">中文版本 Chinese Version</h4>
+            
+            <!-- Basic Information - Chinese -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label required-field">單元/主題</label>
+                    <input type="text" class="form-control" name="unit_topic_zh" value="{{ default_unit_topic_zh }}" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label required-field">課節總數</label>
+                    <input type="number" class="form-control" name="number_of_lessons_zh" value="{{ default_number_lessons }}" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label required-field">班級人數</label>
+                    <input type="number" class="form-control" name="class_size_zh" value="{{ default_class_size }}" required>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Movement Concepts</label>
-                <textarea class="form-control" name="movement_concepts" rows="3"></textarea>
-            </div>
-            <!-- Add more overview fields as needed -->
-        </div>
 
-        <!-- Add more sections following the unit plan structure -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label required-field">期間</label>
+                    <input type="text" class="form-control" name="period_zh" placeholder="DD/MM/YYYY 至 DD/MM/YYYY" value="{{ default_period_zh }}" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label required-field">班別</label>
+                    <input type="text" class="form-control" name="class_info_zh" value="{{ default_class_zh }}" required>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label required-field">級別</label>
+                    <select class="form-select" name="class_level_zh" required>
+                        <option value="小學">小學</option>
+                        <option value="中學">中學</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">性別人數</label>
+                    <div class="row">
+                        <div class="col-6">
+                            <input type="number" class="form-control" name="boys_zh" placeholder="男生" value="{{ default_boys }}">
+                        </div>
+                        <div class="col-6">
+                            <input type="number" class="form-control" name="girls_zh" placeholder="女生" value="{{ default_girls }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">教學場地/設施</label>
+                    <input type="text" class="form-control" name="venue_zh" value="{{ default_venue_zh }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">器材/用具</label>
+                    <input type="text" class="form-control" name="equipment_zh" value="{{ default_equipment_zh }}">
+                </div>
+            </div>
+
+            <!-- Chinese Unit Overview -->
+            <div class="mb-4">
+                <label class="form-label required-field">單元概述</label>
+                <textarea class="form-control" name="unit_overview_zh" rows="3" required></textarea>
+            </div>
+
+            <!-- Chinese Skills and Concepts Table -->
+            <div class="table-section">
+                <h6>單元詳細資料</h6>
+                <div class="mb-3">
+                    <label class="form-label">單元教學重點</label>
+                    <textarea class="form-control" name="skills_topics_zh" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">單元所需的動作概念 (身體與空間時間力度的關係)</label>
+                    <textarea class="form-control" name="movement_concepts_zh" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">學生已有知識</label>
+                    <textarea class="form-control" name="previous_knowledge_zh" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">預期的學生學習成果</label>
+                    <textarea class="form-control" name="learning_outcomes_zh" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">評核（如有）</label>
+                    <textarea class="form-control" name="assessments_zh" rows="2"></textarea>
+                </div>
+            </div>
+
+            <!-- Chinese Objectives -->
+            <div class="table-section">
+                <h6>本單元目標：學生將能</h6>
+                <div class="mb-3">
+                    <label class="form-label">技能方面</label>
+                    <textarea class="form-control" name="psychomotor_obj_zh" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">認知方面</label>
+                    <textarea class="form-control" name="cognitive_obj_zh" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">情意方面</label>
+                    <textarea class="form-control" name="affective_obj_zh" rows="2"></textarea>
+                </div>
+            </div>
+
+            <!-- Chinese Student Characteristics -->
+            <div class="table-section">
+                <h6>學生特徵</h6>
+                <div class="row mb-3">
+                    <div class="col-md-4"><strong>範疇</strong></div>
+                    <div class="col-md-4"><strong>特徵</strong></div>
+                    <div class="col-md-4"><strong>注意事項</strong></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">技能</label>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="psychomotor_chars_zh" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="psychomotor_notes_zh" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">認知</label>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="cognitive_chars_zh" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="cognitive_notes_zh" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label">情意</label>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="affective_chars_zh" rows="2"></textarea>
+                    </div>
+                    <div class="col-md-4">
+                        <textarea class="form-control" name="affective_notes_zh" rows="2"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chinese Approaches -->
+            <div class="table-section">
+                <h6>處理方法</h6>
+                <div class="mb-3">
+                    <label class="form-label">學生學習個別差異</label>
+                    <textarea class="form-control" name="individual_differences_zh" rows="2"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">提升學生學習動機</label>
+                    <textarea class="form-control" name="enhancing_motivation_zh" rows="2"></textarea>
+                </div>
+            </div>
+
+            <!-- Chinese Safety -->
+            <div class="mb-4">
+                <label class="form-label">安全注意事項</label>
+                <textarea class="form-control" name="safety_precautions_zh" rows="2"></textarea>
+            </div>
+
+            <!-- Chinese Unit Contents -->
+            <div class="table-section">
+                <h6>單元內容</h6>
+                <p class="text-muted small">為單元中的每個課節添加詳細資料</p>
+                
+                {% for day in range(1, 6) %}
+                <div class="day-section mb-4 p-3 border rounded">
+                    <h6>課節 {{ day }}</h6>
+                    <div class="mb-3">
+                        <label class="form-label">日期</label>
+                        <input type="text" class="form-control" name="day_{{ day }}_date_zh" placeholder="DD/MM/YYYY">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">主題與內容</label>
+                        <textarea class="form-control" name="day_{{ day }}_theme_zh" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">活動內容</label>
+                        <textarea class="form-control" name="day_{{ day }}_activities_zh" rows="2"></textarea>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Chinese Other Considerations -->
+            <div class="mb-4">
+                <label class="form-label">其他注意事項</label>
+                <textarea class="form-control" name="other_considerations_zh" rows="3"></textarea>
+            </div>
+        </div>
 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">Cancel</a>
