@@ -186,9 +186,17 @@
                     <label class="form-label">Teaching Cues/Objectives</label>
                     <textarea class="form-control" name="intro_cues" rows="1" placeholder="{{ default_intro_cues }}">{{ default_intro_cues }}</textarea>
                 </div>
-                <div class="col-sm-3 mb-3">
+                <div class="mb-3">
                     <label class="form-label">Class Organisation Diagram</label>
-                    <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                    <div class="d-flex gap-2">
+                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                            Create Diagram
+                        </a>
+                    </div>
+                    <small class="form-text text-muted">
+                        Upload an image or create one using our diagram tool
+                    </small>
                 </div>
                 <div class="col-sm-3 mb-3">
                     <label class="form-label">Equipment</label>
@@ -206,9 +214,17 @@
                     <label class="form-label">Teaching Cues/Objectives</label>
                     <textarea class="form-control" name="sd_cues" rows="1" placeholder="{{ default_sd_cues }}">{{ default_sd_cues }}</textarea>
                 </div>
-                <div class="col-sm-3 mb-3">
+                <div class="mb-3">
                     <label class="form-label">Class Organisation Diagram</label>
-                    <input type="file" class="form-control" name="sd_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                    <div class="d-flex gap-2">
+                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                            Create Diagram
+                        </a>
+                    </div>
+                    <small class="form-text text-muted">
+                        Upload an image or create one using our diagram tool
+                    </small>
                 </div>
                 <div class="col-sm-3 mb-3">
                     <label class="form-label">Equipment</label>
@@ -226,9 +242,17 @@
                     <label class="form-label">Teaching Cues/Objectives</label>
                     <textarea class="form-control" name="appli_cues" rows="1" placeholder="{{ default_appli_cues }}">{{ default_appli_cues }}</textarea>
                 </div>
-                <div class="col-sm-3 mb-3">
+                <div class="mb-3">
                     <label class="form-label">Class Organisation Diagram</label>
-                    <input type="file" class="form-control" name="appli_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                    <div class="d-flex gap-2">
+                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                            Create Diagram
+                        </a>
+                    </div>
+                    <small class="form-text text-muted">
+                        Upload an image or create one using our diagram tool
+                    </small>
                 </div>
                 <div class="col-sm-3 mb-3">
                     <label class="form-label">Equipment</label>
@@ -246,9 +270,17 @@
                     <label class="form-label">Teaching Cues/Objectives</label>
                     <textarea class="form-control" name="ca_cues" rows="1" placeholder="{{ default_ca_cues }}">{{ default_ca_cues }}</textarea>
                 </div>
-                <div class="col-sm-3 mb-3">
+                <div class="mb-3">
                     <label class="form-label">Class Organisation Diagram</label>
-                    <input type="file" class="form-control" name="ca_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                    <div class="d-flex gap-2">
+                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                            Create Diagram
+                        </a>
+                    </div>
+                    <small class="form-text text-muted">
+                        Upload an image or create one using our diagram tool
+                    </small>
                 </div>
                 <div class="col-sm-3 mb-3">
                     <label class="form-label">Equipment</label>
@@ -419,9 +451,17 @@
                     <label class="form-label">教學要點/目標</label>
                     <textarea class="form-control" name="intro_cues_zh" rows="1" placeholder="{{ default_intro_cues_zh }}">{{ default_intro_cues_zh }}</textarea>
                 </div>
-                <div class="col-sm-3 mb-3">
+                <div class="mb-3">
                     <label class="form-label">課堂組織圖表</label>
-                    <input type="file" class="form-control" name="intro_file_zh" accept=".png,.jpg,.jpeg,.gif,.svg">
+                    <div class="d-flex gap-2">
+                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                            建立圖表
+                        </a>
+                    </div>
+                    <small class="form-text text-muted">
+                        上傳圖片或使用我們的圖表工具建立圖片
+                    </small>
                 </div>
                 <div class="col-sm-3 mb-3">
                     <label class="form-label">器材</label>
@@ -439,9 +479,17 @@
                     <label class="form-label">教學要點/目標</label>
                     <textarea class="form-control" name="sd_cues_zh" rows="1" placeholder="{{ default_sd_cues_zh }}">{{ default_sd_cues_zh }}</textarea>
                 </div>
-                <div class="col-sm-3 mb-3">
+                <div class="mb-3">
                     <label class="form-label">課堂組織圖表</label>
-                    <input type="file" class="form-control" name="sd_file_zh" accept=".png,.jpg,.jpeg,.gif,.svg">
+                    <div class="d-flex gap-2">
+                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                            建立圖表
+                        </a>
+                    </div>
+                    <small class="form-text text-muted">
+                        上傳圖片或使用我們的圖表工具建立圖片
+                    </small>
                 </div>
                 <div class="col-sm-3 mb-3">
                     <label class="form-label">器材</label>
@@ -459,9 +507,17 @@
                     <label class="form-label">教學要點/目標</label>
                     <textarea class="form-control" name="appli_cues_zh" rows="1" placeholder="{{ default_appli_cues_zh }}">{{ default_appli_cues_zh }}</textarea>
                 </div>
-                <div class="col-sm-3 mb-3">
+                <div class="mb-3">
                     <label class="form-label">課堂組織圖表</label>
-                    <input type="file" class="form-control" name="appli_file_zh" accept=".png,.jpg,.jpeg,.gif,.svg">
+                    <div class="d-flex gap-2">
+                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                            建立圖表
+                        </a>
+                    </div>
+                    <small class="form-text text-muted">
+                        上傳圖片或使用我們的圖表工具建立圖片
+                    </small>
                 </div>
                 <div class="col-sm-3 mb-3">
                     <label class="form-label">器材</label>
@@ -479,9 +535,17 @@
                     <label class="form-label">教學要點/目標</label>
                     <textarea class="form-control" name="ca_cues_zh" rows="1" placeholder="{{ default_ca_cues_zh }}">{{ default_ca_cues_zh }}</textarea>
                 </div>
-                <div class="col-sm-3 mb-3">
+                <div class="mb-3">
                     <label class="form-label">課堂組織圖表</label>
-                    <input type="file" class="form-control" name="ca_file_zh" accept=".png,.jpg,.jpeg,.gif,.svg">
+                    <div class="d-flex gap-2">
+                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                            建立圖表
+                        </a>
+                    </div>
+                    <small class="form-text text-muted">
+                        上傳圖片或使用我們的圖表工具建立圖片
+                    </small>
                 </div>
                 <div class="col-sm-3 mb-3">
                     <label class="form-label">器材</label>

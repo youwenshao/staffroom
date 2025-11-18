@@ -321,6 +321,10 @@ def view_unit_plan(plan_id):
         return "Plan not found!", 404
     return render_template('view_unit_plan.html', plan=plan)
 
+@app.route('/diagram-tool')
+def diagram_tool():
+    return render_template('diagram_tool.html')
+
 def get_lesson_default_values():
     """Return default values for the form"""
     tomorrow = (datetime.now() + timedelta(days=1)).strftime('%d/%m/%Y')
