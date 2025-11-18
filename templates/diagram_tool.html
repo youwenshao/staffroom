@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Diagram Tool - staffroom{% endblock %}
+
+{% block styles %}
+<link href="{{ url_for('static', filename='css/diagram-tool.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid diagram-container">
+    <div class="row">
+        <!-- Sidebar with tools -->
+        <div class="col-md-3 sidebar">
+            <div class="tool-section">
+                <h5>People</h5>
+                <div class="tool-btn" data-type="teacher">
+                    <div class="tool-icon teacher-icon"></div>
+                    <span>Teacher</span>
+                </div>
+                <div class="tool-btn" data-type="student">
+                    <div class="tool-icon student-icon"></div>
+                    <span>Student</span>
+                </div>
+            </div>
+            
+            <div class="tool-section">
+                <h5>Directions</h5>
+                <div class="tool-btn" data-type="facing-arrow">
+                    <div class="tool-icon facing-arrow-icon"></div>
+                    <span>Facing Direction</span>
+                </div>
+                <div class="tool-btn" data-type="movement-arrow">
+                    <div class="tool-icon movement-arrow-icon"></div>
+                    <span>Movement Path</span>
+                </div>
+            </div>
+            
+            <div class="tool-section">
+                <h5>Equipment & Areas</h5>
+                <div class="tool-btn" data-type="area">
+                    <div class="tool-icon area-icon"></div>
+                    <span>Area/Mat</span>
+                </div>
+                <div class="tool-btn" data-type="obstacle">
+                    <div class="tool-icon obstacle-icon"></div>
+                    <span>Obstacle</span>
+                </div>
+                <div class="tool-btn" data-type="equipment">
+                    <div class="tool-icon equipment-icon"></div>
+                    <span>Equipment</span>
+                </div>
+            </div>
+            
+            <div class="action-section">
+                <h5>Actions</h5>
+                <div class="action-buttons">
+                    <button id="clearCanvas" class="btn btn-warning btn-sm">Clear Canvas</button>
+                    <button id="downloadPNG" class="btn btn-success btn-sm">Download PNG</button>
+                    <button id="backToForm" class="btn btn-secondary btn-sm">Back to Form</button>
+                </div>
+            </div>
+
+            <div class="properties-section">
+                <h5>Properties</h5>
+                <div id="propertiesPanel" class="properties-panel">
+                    <p class="text-muted">Select an object to edit properties</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Canvas area -->
+        <div class="col-md-9 canvas-container">
+            <div class="canvas-header">
+                <h4>Class Organization Diagram</h4>
+                <div class="canvas-controls">
+                    <button id="toggleGrid" class="btn btn-outline-secondary btn-sm">Toggle Grid</button>
+                    <button id="zoomIn" class="btn btn-outline-secondary btn-sm">Zoom In</button>
+                    <button id="zoomOut" class="btn btn-outline-secondary btn-sm">Zoom Out</button>
+                    <button id="resetZoom" class="btn btn-outline-secondary btn-sm">Reset Zoom</button>
+                </div>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas id="diagramCanvas"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+<script src="{{ url_for('static', filename='js/diagram-tool.js') }}"></script>
+{% endblock %}
