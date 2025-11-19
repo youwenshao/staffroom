@@ -488,3 +488,64 @@ class DiagramTool {
 document.addEventListener('DOMContentLoaded', () => {
     new DiagramTool();
 });
+
+class DiagramTool {
+    constructor() {
+        console.log('DiagramTool constructor called');
+        this.canvas = null;
+        this.currentTool = null;
+        this.gridSize = 20;
+        this.showGrid = true;
+        this.zoomLevel = 1;
+        
+        this.init();
+    }
+
+    init() {
+        console.log('Initializing DiagramTool...');
+        console.log('Fabric loaded:', typeof fabric !== 'undefined');
+        console.log('Canvas element:', document.getElementById('diagramCanvas'));
+        
+        this.setupCanvas();
+        this.bindEvents();
+        this.drawGrid();
+        console.log('DiagramTool initialization complete');
+    }
+
+    setupCanvas() {
+        console.log('Setting up canvas...');
+        const canvasEl = document.getElementById('diagramCanvas');
+        if (!canvasEl) {
+            console.error('Canvas element not found!');
+            return;
+        }
+
+        try {
+            this.canvas = new fabric.Canvas('diagramCanvas', {
+                width: 800,
+                height: 600,
+                selection: true,
+                preserveObjectStacking: true
+            });
+            console.log('Canvas created successfully:', this.canvas);
+        } catch (error) {
+            console.error('Error creating canvas:', error);
+        }
+
+        // Enable resizing and rotation for all objects
+        this.canvas.on('object:selected', (e) => {
+            this.showProperties(e.target);
+        });
+
+        this.canvas.on('selection:cleared', () => {
+            this.hideProperties();
+        });
+    }
+    // ... rest of the code remains the same
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing DiagramTool...');
+    new DiagramTool();
+});
