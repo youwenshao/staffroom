@@ -354,15 +354,11 @@
                     <input type="text" class="form-control" name="class_id_zh" value="{{ default_class_zh }}" required>
                 </div>
                 <div class="col-sm-2 mb-3 required-field">
-                    <label class="form-label">級別</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="class_level_zh" id="primary_zh" value="小學" {{ 'checked' if default_level_zh == '小學' }}>
-                        <label class="form-check-label" for="primary_zh">小學</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="class_level_zh" id="secondary_zh" value="中學" {{ 'checked' if default_level_zh == '中學' }}>
-                        <label class="form-check-label" for="secondary_zh">中學</label>
-                    </div>
+                    <label class="form-label">Level</label>
+                    <select class="form-select" name="class_level" required>
+                        <option value="Primary">Primary</option>
+                        <option value="Secondary">Secondary</option>
+                    </select>
                 </div>
                 <div class="col-sm-2 mb-3">
                     <label class="form-label required-field">學生人數</label>
