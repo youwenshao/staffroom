@@ -1,7 +1,7 @@
 <!-- templates/view_unit_plan.html -->
 {% extends "base.html" %}
 
-{% block title %}Unit Plan: {{ plan.unit_topic }} - CUHK PE Planner{% endblock %}
+{% block title %}Unit Plan: {{ plan.unit_topic }} - created with staffroom by CUHK SSPE{% endblock %}
 
 {% block styles %}
 <style>
@@ -223,6 +223,9 @@
     <!-- Other Considerations -->
     <h4 class="section-title">6.) Other Considerations:</h4>
     <p>{{ plan.other_considerations }}</p>
+
+    <h4 class="section-title">7.) References:</h4>
+    <p>{{ plan.references or 'No references provided.' }}</p>
 </div>
 
 <div class="page-break"></div>
@@ -381,6 +384,9 @@
     <!-- Chinese Other Considerations -->
     <h4 class="section-title">6.) 其他注意事項:</h4>
     <p>{{ plan.other_considerations_zh }}</p>
+
+    <h4 class="section-title">7.) 參考資料:</h4>
+    <p>{{ plan.references or '沒有提供參考資料。' }}</p>
 </div>
 
 <!-- Action Buttons -->
