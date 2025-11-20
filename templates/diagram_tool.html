@@ -4,6 +4,7 @@
 
 {% block styles %}
 <style>
+/* All your existing CSS styles from diagram-tool.css go here */
 .diagram-container {
     height: 100vh;
     padding: 0;
@@ -594,13 +595,16 @@ class DiagramTool {
         }
     }
 
-        createTeacher(x, y) {
+    // FIXED: Teacher icon with proper smiley face
+    createTeacher(x, y) {
         const group = new fabric.Group([], {
             left: x,
             top: y,
             hasControls: true,
             hasBorders: true,
-            lockScalingFlip: true
+            lockScalingFlip: true,
+            originX: 'center',
+            originY: 'center'
         });
 
         // Outer circle
@@ -613,15 +617,7 @@ class DiagramTool {
             originY: 'center'
         });
 
-        // Smiley face - using path for proper smiley
-        const smile = new fabric.Path('M -8 8 Q 0 12 8 8', {
-            fill: 'transparent',
-            stroke: '#333333',
-            strokeWidth: 2,
-            originX: 'center',
-            originY: 'center'
-        });
-
+        // Eyes
         const leftEye = new fabric.Circle({
             radius: 2,
             left: -6,
@@ -640,7 +636,17 @@ class DiagramTool {
             originY: 'center'
         });
 
-        group.addWithUpdate(circle, leftEye, rightEye, smile);
+        // Smile - using a proper curved path
+        const smile = new fabric.Path('M -8 8 Q 0 12 8 8', {
+            fill: 'transparent',
+            stroke: '#333333',
+            strokeWidth: 2,
+            originX: 'center',
+            originY: 'center'
+        });
+
+        // Add all objects to the group
+        group.add(circle, leftEye, rightEye, smile);
         return group;
     }
 
@@ -659,64 +665,76 @@ class DiagramTool {
         });
     }
 
+    // FIXED: Arrow with properly oriented arrowhead
     createFacingArrow(x, y) {
-        const lineLength = 50;
-        const line = new fabric.Line([x, y, x + lineLength, y], {
+        const lineLength = 60;
+        
+        // Create the line
+        const line = new fabric.Line([0, 0, lineLength, 0], {
             stroke: '#333333',
             strokeWidth: 3,
-            fill: '#333333',
             strokeLineCap: 'round',
-            hasControls: true,
-            hasBorders: true
+            originX: 'center',
+            originY: 'center'
         });
 
-        // Create properly oriented arrowhead
+        // Create arrowhead pointing right (triangle rotated 90 degrees)
         const arrowHead = new fabric.Triangle({
-            left: x + lineLength,
-            top: y,
+            left: lineLength,
+            top: 0,
             width: 12,
             height: 12,
             fill: '#333333',
-            angle: 0, // Pointing right by default
+            angle: 90, // This rotates the triangle to point right
             originX: 'center',
             originY: 'center'
         });
 
         const group = new fabric.Group([line, arrowHead], {
+            left: x,
+            top: y,
             hasControls: true,
-            hasBorders: true
+            hasBorders: true,
+            originX: 'center',
+            originY: 'center'
         });
 
         return group;
     }
 
+    // FIXED: Movement arrow with properly oriented arrowhead
     createMovementArrow(x, y) {
-        const lineLength = 50;
-        const line = new fabric.Line([x, y, x + lineLength, y], {
+        const lineLength = 60;
+        
+        // Create the dashed line
+        const line = new fabric.Line([0, 0, lineLength, 0], {
             stroke: '#333333',
             strokeWidth: 2,
             strokeDashArray: [5, 5],
-            fill: '#333333',
             strokeLineCap: 'round',
-            hasControls: true,
-            hasBorders: true
+            originX: 'center',
+            originY: 'center'
         });
 
-        // Create properly oriented arrowhead
+        // Create arrowhead pointing right (triangle rotated 90 degrees)
         const arrowHead = new fabric.Triangle({
-            left: x + lineLength,
-            top: y,
+            left: lineLength,
+            top: 0,
             width: 10,
             height: 10,
             fill: '#333333',
-            angle: 0, // Pointing right by default
+            angle: 90, // This rotates the triangle to point right
             originX: 'center',
             originY: 'center'
         });
 
         const group = new fabric.Group([line, arrowHead], {
+            left: x,
+            top: y,
             hasControls: true,
-            hasBorders: true
+            hasBorders: true,
+            originX: 'center',
+            originY: 'center'
         });
 
         return group;
@@ -954,7 +972,8 @@ class DiagramTool {
     getObjectType(object) {
         if (object instanceof fabric.Circle) return 'Student';
         if (object instanceof fabric.Group) {
-            if (object._objects && object._objects.some(obj => obj.stroke === 'blue')) return 'Teacher';
+            // Check if it's a teacher by looking for the smile path
+            if (object._objects && object._objects.some(obj => obj instanceof fabric.Path)) return 'Teacher';
             if (object._objects && object._objects.some(obj => obj.strokeDashArray)) return 'Movement Arrow';
             return 'Facing Arrow';
         }
