@@ -57,59 +57,108 @@
     width: 24px;
     height: 24px;
     margin-right: 0.5rem;
-    border: 1px solid #000;
+    border: 1px solid #333;
+    position: relative;
 }
 
 .teacher-icon {
-    background: radial-gradient(circle, transparent 30%, blue 30%, blue 40%, transparent 40%);
+    background: transparent;
     border-radius: 50%;
-    border-color: blue;
+    border-color: #333;
+}
+
+.teacher-icon::before,
+.teacher-icon::after {
+    content: '';
+    position: absolute;
+    background: #333;
+}
+
+.teacher-icon::before {
+    /* Eyes */
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    top: 7px;
+    left: 6px;
+    box-shadow: 8px 0 0 #333; /* Second eye */
+}
+
+.teacher-icon::after {
+    /* Smile */
+    width: 8px;
+    height: 4px;
+    border-radius: 0 0 4px 4px;
+    bottom: 6px;
+    left: 8px;
 }
 
 .student-icon {
     border-radius: 50%;
-    border-color: black;
+    border-color: #333;
 }
 
 .facing-arrow-icon {
+    background: transparent;
     position: relative;
-    background: linear-gradient(to right, black, black);
-    background-size: 80% 2px;
-    background-repeat: no-repeat;
-    background-position: center;
+}
+
+.facing-arrow-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 4px;
+    right: 8px;
+    height: 2px;
+    background: #333;
+    transform: translateY(-50%);
 }
 
 .facing-arrow-icon::after {
-    content: '➤';
+    content: '';
     position: absolute;
-    right: 2px;
+    right: 4px;
     top: 50%;
+    width: 0;
+    height: 0;
+    border-left: 6px solid #333;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
     transform: translateY(-50%);
-    font-size: 12px;
 }
 
 .movement-arrow-icon {
+    background: transparent;
     position: relative;
-    background: linear-gradient(to right, black, black);
-    background-size: 80% 1px;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-image: linear-gradient(to right, black 50%, transparent 50%);
-    background-size: 4px 1px;
+}
+
+.movement-arrow-icon::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 4px;
+    right: 8px;
+    height: 1px;
+    background: repeating-linear-gradient(to right, #333, #333 2px, transparent 2px, transparent 4px);
+    transform: translateY(-50%);
 }
 
 .movement-arrow-icon::after {
-    content: '➤';
+    content: '';
     position: absolute;
-    right: 2px;
+    right: 4px;
     top: 50%;
+    width: 0;
+    height: 0;
+    border-left: 6px solid #333;
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
     transform: translateY(-50%);
-    font-size: 12px;
 }
 
 .area-icon {
     background: transparent;
-    border: 1px dashed #666;
+    border: 1px dashed #333;
 }
 
 .obstacle-icon {
@@ -117,9 +166,10 @@
     height: 0;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-bottom: 16px solid #666;
+    border-bottom: 16px solid #333;
     background: transparent;
     border-top: none;
+    margin: 4px auto;
 }
 
 .equipment-icon {
@@ -127,8 +177,29 @@
     height: 16px;
     transform: rotate(45deg);
     background: transparent;
-    border: 1px solid #666;
+    border: 1px solid #333;
     margin: 4px;
+}
+
+.select-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    background: transparent;
+    border: 1px solid #333;
+    font-size: 14px;
+}
+
+.eraser-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    background: transparent;
+    border: 1px solid #333;
+    color: #333;
+    font-size: 14px;
 }
 
 .action-section {
@@ -219,6 +290,18 @@
         <!-- Sidebar with tools -->
         <div class="col-md-3 sidebar">
             <div class="tool-section">
+                <h5>Tools</h5>
+                <div class="tool-btn" data-type="select">
+                    <div class="tool-icon select-icon">↖</div>
+                    <span>Select (V)</span>
+                </div>
+                <div class="tool-btn" data-type="eraser">
+                    <div class="tool-icon eraser-icon">✕</div>
+                    <span>Eraser (E)</span>
+                </div>
+            </div>
+            
+            <div class="tool-section">
                 <h5>People</h5>
                 <div class="tool-btn" data-type="teacher">
                     <div class="tool-icon teacher-icon"></div>
@@ -307,20 +390,17 @@ class DiagramTool {
         this.gridSize = 20;
         this.showGrid = true;
         this.zoomLevel = 1;
+        this.isDrawingMode = false;
         
         this.init();
     }
 
     init() {
         console.log('Initializing DiagramTool...');
-        console.log('Fabric loaded:', typeof fabric !== 'undefined');
-        
-        const canvasEl = document.getElementById('diagramCanvas');
-        console.log('Canvas element:', canvasEl);
-        
         this.setupCanvas();
         this.bindEvents();
         this.drawGrid();
+        this.setCurrentTool('select'); // Start in selection mode by default
         console.log('DiagramTool initialization complete');
     }
 
@@ -331,7 +411,8 @@ class DiagramTool {
                 width: 800,
                 height: 600,
                 selection: true,
-                preserveObjectStacking: true
+                preserveObjectStacking: true,
+                stopContextMenu: true // Disable right-click context menu
             });
             console.log('Canvas created successfully');
         } catch (error) {
@@ -347,6 +428,14 @@ class DiagramTool {
         this.canvas.on('selection:cleared', () => {
             this.hideProperties();
         });
+
+        // Double-click to delete (convenience feature)
+        this.canvas.on('mouse:dblclick', (e) => {
+            if (e.target && this.currentTool === 'select') {
+                this.canvas.remove(e.target);
+                this.canvas.requestRenderAll();
+            }
+        });
     }
 
     bindEvents() {
@@ -357,10 +446,16 @@ class DiagramTool {
             });
         });
 
-        // Canvas click for adding objects
+        // Canvas click for adding objects - only in drawing mode
         this.canvas.on('mouse:down', (e) => {
-            if (this.currentTool && !e.target) {
+            if (this.currentTool && this.currentTool !== 'select' && this.currentTool !== 'eraser' && !e.target) {
                 this.addObject(e.pointer.x, e.pointer.y);
+            }
+            
+            // Eraser tool functionality
+            if (this.currentTool === 'eraser' && e.target) {
+                this.canvas.remove(e.target);
+                this.canvas.requestRenderAll();
             }
         });
 
@@ -374,10 +469,54 @@ class DiagramTool {
         document.getElementById('zoomIn').addEventListener('click', () => this.zoom(0.1));
         document.getElementById('zoomOut').addEventListener('click', () => this.zoom(-0.1));
         document.getElementById('resetZoom').addEventListener('click', () => this.resetZoom());
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Delete key to remove selected objects
+            if ((e.key === 'Delete' || e.key === 'Backspace') && this.canvas.getActiveObject()) {
+                this.canvas.remove(this.canvas.getActiveObject());
+                this.canvas.requestRenderAll();
+                this.hideProperties();
+            }
+            
+            // Escape key to clear selection
+            if (e.key === 'Escape') {
+                this.canvas.discardActiveObject();
+                this.canvas.requestRenderAll();
+                this.hideProperties();
+            }
+            
+            // V key for selection tool
+            if (e.key === 'v' && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                this.setCurrentTool('select');
+            }
+            
+            // E key for eraser tool
+            if (e.key === 'e' && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                this.setCurrentTool('eraser');
+            }
+        });
     }
 
     setCurrentTool(toolType) {
         this.currentTool = toolType;
+        
+        // Update canvas behavior based on tool
+        if (toolType === 'select') {
+            this.canvas.selection = true;
+            this.canvas.defaultCursor = 'default';
+            document.body.style.cursor = 'default';
+        } else if (toolType === 'eraser') {
+            this.canvas.selection = false;
+            this.canvas.defaultCursor = 'crosshair';
+            document.body.style.cursor = 'crosshair';
+        } else {
+            this.canvas.selection = false;
+            this.canvas.defaultCursor = 'crosshair';
+            document.body.style.cursor = 'crosshair';
+        }
         
         // Update UI
         document.querySelectorAll('.tool-btn').forEach(btn => {
@@ -389,9 +528,35 @@ class DiagramTool {
             activeBtn.classList.add('active');
         }
 
-        // Clear selection when switching tools
-        this.canvas.discardActiveObject();
-        this.canvas.requestRenderAll();
+        // Clear selection when switching tools (except when switching to select)
+        if (toolType !== 'select') {
+            this.canvas.discardActiveObject();
+            this.canvas.requestRenderAll();
+        }
+
+        // Update tooltip in properties panel
+        this.updateTooltip();
+    }
+
+    updateTooltip() {
+        const panel = document.getElementById('propertiesPanel');
+        let tooltip = '';
+        
+        switch(this.currentTool) {
+            case 'select':
+                tooltip = '<p class="text-muted"><strong>Selection Tool</strong><br>• Click to select objects<br>• Drag to move<br>• Use handles to resize/rotate<br>• Press Delete to remove<br>• Double-click to quick delete</p>';
+                break;
+            case 'eraser':
+                tooltip = '<p class="text-muted"><strong>Eraser Tool</strong><br>• Click on objects to delete them<br>• Press V for Selection tool</p>';
+                break;
+            default:
+                tooltip = '<p class="text-muted"><strong>Drawing Tool</strong><br>• Click on canvas to add objects<br>• Press V for Selection tool<br>• Press E for Eraser tool</p>';
+        }
+        
+        // Only show tooltip if no object is selected
+        if (!this.canvas.getActiveObject()) {
+            panel.innerHTML = tooltip;
+        }
     }
 
     addObject(x, y) {
@@ -425,10 +590,11 @@ class DiagramTool {
             this.canvas.add(newObject);
             this.canvas.setActiveObject(newObject);
             this.canvas.requestRenderAll();
+            this.showProperties(newObject);
         }
     }
 
-    createTeacher(x, y) {
+        createTeacher(x, y) {
         const group = new fabric.Group([], {
             left: x,
             top: y,
@@ -441,16 +607,16 @@ class DiagramTool {
         const circle = new fabric.Circle({
             radius: 20,
             fill: 'transparent',
-            stroke: 'blue',
+            stroke: '#333333',
             strokeWidth: 3,
             originX: 'center',
             originY: 'center'
         });
 
-        // Smiley face
-        const smile = new fabric.Path('M -10 5 Q 0 15 10 5', {
+        // Smiley face - using path for proper smiley
+        const smile = new fabric.Path('M -8 8 Q 0 12 8 8', {
             fill: 'transparent',
-            stroke: 'blue',
+            stroke: '#333333',
             strokeWidth: 2,
             originX: 'center',
             originY: 'center'
@@ -459,8 +625,8 @@ class DiagramTool {
         const leftEye = new fabric.Circle({
             radius: 2,
             left: -6,
-            top: -5,
-            fill: 'blue',
+            top: -3,
+            fill: '#333333',
             originX: 'center',
             originY: 'center'
         });
@@ -468,13 +634,13 @@ class DiagramTool {
         const rightEye = new fabric.Circle({
             radius: 2,
             left: 6,
-            top: -5,
-            fill: 'blue',
+            top: -3,
+            fill: '#333333',
             originX: 'center',
             originY: 'center'
         });
 
-        group.addWithUpdate(circle, smile, leftEye, rightEye);
+        group.addWithUpdate(circle, leftEye, rightEye, smile);
         return group;
     }
 
@@ -484,7 +650,7 @@ class DiagramTool {
             top: y,
             radius: 15,
             fill: 'transparent',
-            stroke: 'black',
+            stroke: '#333333',
             strokeWidth: 2,
             originX: 'center',
             originY: 'center',
@@ -494,23 +660,24 @@ class DiagramTool {
     }
 
     createFacingArrow(x, y) {
-        const line = new fabric.Line([x, y, x + 50, y], {
-            stroke: 'black',
+        const lineLength = 50;
+        const line = new fabric.Line([x, y, x + lineLength, y], {
+            stroke: '#333333',
             strokeWidth: 3,
-            fill: 'black',
+            fill: '#333333',
             strokeLineCap: 'round',
             hasControls: true,
             hasBorders: true
         });
 
-        // Add arrowhead
+        // Create properly oriented arrowhead
         const arrowHead = new fabric.Triangle({
-            left: x + 50,
+            left: x + lineLength,
             top: y,
-            width: 10,
-            height: 10,
-            fill: 'black',
-            angle: 0,
+            width: 12,
+            height: 12,
+            fill: '#333333',
+            angle: 0, // Pointing right by default
             originX: 'center',
             originY: 'center'
         });
@@ -524,24 +691,25 @@ class DiagramTool {
     }
 
     createMovementArrow(x, y) {
-        const line = new fabric.Line([x, y, x + 50, y], {
-            stroke: 'black',
+        const lineLength = 50;
+        const line = new fabric.Line([x, y, x + lineLength, y], {
+            stroke: '#333333',
             strokeWidth: 2,
             strokeDashArray: [5, 5],
-            fill: 'black',
+            fill: '#333333',
             strokeLineCap: 'round',
             hasControls: true,
             hasBorders: true
         });
 
-        // Add arrowhead
+        // Create properly oriented arrowhead
         const arrowHead = new fabric.Triangle({
-            left: x + 50,
+            left: x + lineLength,
             top: y,
-            width: 8,
-            height: 8,
-            fill: 'black',
-            angle: 0,
+            width: 10,
+            height: 10,
+            fill: '#333333',
+            angle: 0, // Pointing right by default
             originX: 'center',
             originY: 'center'
         });
@@ -561,7 +729,7 @@ class DiagramTool {
             width: 100,
             height: 60,
             fill: 'transparent',
-            stroke: '#666',
+            stroke: '#333333',
             strokeWidth: 1,
             strokeDashArray: [5, 5],
             hasControls: true,
@@ -577,7 +745,7 @@ class DiagramTool {
             width: 30,
             height: 30,
             fill: 'transparent',
-            stroke: '#666',
+            stroke: '#333333',
             strokeWidth: 2,
             hasControls: true,
             hasBorders: true,
@@ -592,7 +760,7 @@ class DiagramTool {
             width: 25,
             height: 25,
             fill: 'transparent',
-            stroke: '#666',
+            stroke: '#333333',
             strokeWidth: 2,
             originX: 'center',
             originY: 'center'
@@ -701,6 +869,7 @@ class DiagramTool {
             const objects = this.canvas.getObjects().filter(obj => !obj.excludeFromExport);
             objects.forEach(obj => this.canvas.remove(obj));
             this.canvas.requestRenderAll();
+            this.hideProperties();
         }
     }
 
@@ -729,7 +898,13 @@ class DiagramTool {
                 <input type="number" id="objectHeight" value="${Math.round(object.height * object.scaleY)}" class="form-control form-control-sm">
             </div>
             ` : ''}
-            <button id="deleteObject" class="btn btn-danger btn-sm btn-block mt-2">Delete</button>
+            <div class="d-flex gap-1 mt-2">
+                <button id="deleteObject" class="btn btn-danger btn-sm flex-fill">Delete</button>
+                <button id="duplicateObject" class="btn btn-secondary btn-sm flex-fill">Duplicate</button>
+            </div>
+            <div class="mt-1 small text-muted">
+                <em>Tip: Press Delete key or double-click to delete</em>
+            </div>
         `;
 
         panel.appendChild(properties);
@@ -753,11 +928,27 @@ class DiagramTool {
             this.canvas.requestRenderAll();
             this.hideProperties();
         });
+
+        document.getElementById('duplicateObject').addEventListener('click', () => {
+            this.duplicateObject(object);
+        });
+    }
+
+    duplicateObject(object) {
+        object.clone((cloned) => {
+            cloned.set({
+                left: object.left + 20,
+                top: object.top + 20
+            });
+            this.canvas.add(cloned);
+            this.canvas.setActiveObject(cloned);
+            this.canvas.requestRenderAll();
+            this.showProperties(cloned);
+        });
     }
 
     hideProperties() {
-        const panel = document.getElementById('propertiesPanel');
-        panel.innerHTML = '<p class="text-muted">Select an object to edit properties</p>';
+        this.updateTooltip();
     }
 
     getObjectType(object) {
