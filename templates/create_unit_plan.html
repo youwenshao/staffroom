@@ -460,6 +460,28 @@
             </div>
         </div>
 
+        <!-- REFERENCES SECTION -->
+        <div class="form-section">
+            <h4 class="form-section-title">References / 參考資料</h4>
+            
+            <!-- English References -->
+            <div class="mb-4">
+                <label class="form-label">References (English)</label>
+                <textarea class="form-control" name="references" rows="3" placeholder="List your references, textbooks, websites, or other resources used in planning this unit"></textarea>
+                <div class="form-text">These references will be displayed in both English and Chinese versions of your unit plan.</div>
+            </div>
+
+            <!-- Chinese References Note -->
+            <div class="mb-4">
+                <label class="form-label">參考資料 (中文)</label>
+                <div class="alert alert-info">
+                    <small>Note: The same references will be used for both English and Chinese versions. Please include any Chinese resources in the field above.</small>
+                    <br>
+                    <small>注意：相同的參考資料將用於英文和中文版本。請在上方欄位中包含中文資源。</small>
+                </div>
+            </div>
+        </div>
+
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <a href="{{ url_for('index') }}" class="btn btn-secondary me-md-2">Cancel</a>
             <button type="submit" class="btn btn-primary">Generate Unit Plan</button>

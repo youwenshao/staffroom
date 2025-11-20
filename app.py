@@ -245,6 +245,9 @@ def create_unit():
         'enhancing_motivation': request.form.get('enhancing_motivation'),
         'safety_precautions': request.form.get('safety_precautions'),
         'other_considerations': request.form.get('other_considerations'),
+
+        # ADD THIS LINE FOR REFERENCES
+        'references': request.form.get('references'),
         
         # Unit contents for 5 days
         'unit_contents': []
