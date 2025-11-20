@@ -41,6 +41,7 @@
     background: white;
     cursor: pointer;
     transition: all 0.2s;
+    width: 100%;
 }
 
 .tool-btn:hover {
@@ -60,6 +61,7 @@
     margin-right: 0.5rem;
     border: 1px solid #333;
     position: relative;
+    flex-shrink: 0;
 }
 
 .teacher-icon {
@@ -162,6 +164,7 @@
     border: 1px dashed #333;
 }
 
+/* FIXED: Obstacle icon alignment */
 .obstacle-icon {
     width: 0;
     height: 0;
@@ -170,16 +173,17 @@
     border-bottom: 16px solid #333;
     background: transparent;
     border-top: none;
-    margin: 4px auto;
+    margin: 0 auto; /* Changed from 4px auto to center properly */
 }
 
+/* FIXED: Equipment icon spacing */
 .equipment-icon {
     width: 16px;
     height: 16px;
     transform: rotate(45deg);
     background: transparent;
     border: 1px solid #333;
-    margin: 4px;
+    margin: 0; /* Remove margin and let tool-icon handle spacing */
 }
 
 .select-icon {
@@ -595,19 +599,9 @@ class DiagramTool {
         }
     }
 
-    // FIXED: Teacher icon with proper smiley face
+    // FIXED: Teacher icon with properly working smiley face
     createTeacher(x, y) {
-        const group = new fabric.Group([], {
-            left: x,
-            top: y,
-            hasControls: true,
-            hasBorders: true,
-            lockScalingFlip: true,
-            originX: 'center',
-            originY: 'center'
-        });
-
-        // Outer circle
+        // Create all the components first
         const circle = new fabric.Circle({
             radius: 20,
             fill: 'transparent',
@@ -617,11 +611,10 @@ class DiagramTool {
             originY: 'center'
         });
 
-        // Eyes
         const leftEye = new fabric.Circle({
             radius: 2,
             left: -6,
-            top: -3,
+            top: -5,
             fill: '#333333',
             originX: 'center',
             originY: 'center'
@@ -630,7 +623,7 @@ class DiagramTool {
         const rightEye = new fabric.Circle({
             radius: 2,
             left: 6,
-            top: -3,
+            top: -5,
             fill: '#333333',
             originX: 'center',
             originY: 'center'
@@ -645,8 +638,17 @@ class DiagramTool {
             originY: 'center'
         });
 
-        // Add all objects to the group
-        group.add(circle, leftEye, rightEye, smile);
+        // Create group with all objects
+        const group = new fabric.Group([circle, leftEye, rightEye, smile], {
+            left: x,
+            top: y,
+            hasControls: true,
+            hasBorders: true,
+            lockScalingFlip: true,
+            originX: 'center',
+            originY: 'center'
+        });
+
         return group;
     }
 
@@ -665,7 +667,6 @@ class DiagramTool {
         });
     }
 
-    // FIXED: Arrow with properly oriented arrowhead
     createFacingArrow(x, y) {
         const lineLength = 60;
         
@@ -702,7 +703,6 @@ class DiagramTool {
         return group;
     }
 
-    // FIXED: Movement arrow with properly oriented arrowhead
     createMovementArrow(x, y) {
         const lineLength = 60;
         
