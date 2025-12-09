@@ -10,10 +10,6 @@
         padding: 2rem;
         margin-bottom: 2rem;
     }
-    .required-field::after {
-        content: " *";
-        color: red;
-    }
     .language-section {
         border-left: 4px solid #DDA52D;
         padding-left: 1rem;
@@ -46,6 +42,54 @@
     .form-language-section.active {
         display: block;
     }
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 1rem;
+        }
+        .language-section {
+            padding-left: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .activity-row {
+            padding: 0.75rem !important;
+        }
+        .form-control, .form-select, textarea {
+            font-size: 0.9rem;
+        }
+        .btn-sm {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+    }
+    @media (max-width: 576px) {
+        .form-container {
+            padding: 0.75rem;
+            border-radius: 5px;
+        }
+        .row > [class*="col-"] {
+            margin-bottom: 0.5rem;
+        }
+        .activity-row .row > [class*="col-"] {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+        .d-flex.gap-2 {
+            flex-direction: column;
+            gap: 0.5rem !important;
+        }
+        .d-flex.gap-2 .btn {
+            width: 100%;
+        }
+    }
+    .remove-activity-row:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    .file-preview {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
 </style>
 {% endblock %}
 
@@ -73,82 +117,82 @@
             
             <div class="row">
                 <div class="col-sm-6 mb-3">
-                    <label class="form-label required-field">Student-Teacher's Name</label>
+                    <label class="form-label">Student-Teacher's Name</label>
                     <input type="text" class="form-control" name="teacher_name" value="{{ default_teacher }}" required>
                 </div>
                 <div class="col-sm-2 mb-3">
-                    <label class="form-label required-field">PESH Year</label>
+                    <label class="form-label">PESH Year</label>
                     <input type="number" class="form-control" name="pesh_year" value="{{ default_pesh_year }}" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-sm-4 mb-3">
-                    <label class="form-label required-field">Date</label>
+                    <label class="form-label">Date</label>
                     <input type="text" class="form-control" name="date" placeholder="DD/MM/YYYY" value="{{ default_date }}" required>
                 </div>
                 <div class="col-sm-2 mb-3">
-                    <label class="form-label required-field">Duration (mins)</label>
+                    <label class="form-label">Duration (mins)</label>
                     <input type="number" class="form-control" name="class_duration" value="{{ default_duration }}" required>
                 </div>
                 <div class="col-sm-3 mb-3">
-                    <label class="form-label required-field">Start Time</label>
+                    <label class="form-label">Start Time</label>
                     <input type="time" class="form-control" name="start_time" value="{{ default_start_time }}" required>
                 </div>
                 <div class="col-sm-3 mb-3">
-                    <label class="form-label required-field">End Time</label>
+                    <label class="form-label">End Time</label>
                     <input type="time" class="form-control" name="end_time" value="{{ default_end_time }}" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="mb-3">
-                    <label class="form-label required-field">School Name</label>
+                    <label class="form-label">School Name</label>
                     <input type="text" class="form-control" name="school_name" value="{{ default_school }}" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-sm-2 mb-3">
-                    <label class="form-label required-field">Year</label>
+                    <label class="form-label">Year</label>
                     <input type="number" class="form-control" name="year" value="{{ default_year }}" required>
                 </div>
                 <div class="col-sm-2 mb-3">
-                    <label class="form-label required-field">Class</label>
+                    <label class="form-label">Class</label>
                     <input type="text" class="form-control" name="class_id" value="{{ default_class }}" required>
                 </div>
-                <div class="col-sm-2 mb-3 required-field">
-                    <label class="form-label">Level</label>
-                    <select class="form-select" name="class_level" required>
-                        <option value="Primary">Primary</option>
-                        <option value="Secondary">Secondary</option>
+                <div class="col-sm-2 mb-3">
+                    <label class="form-label">類別</label>
+                    <select class="form-select" name="class_level_zh" required>
+                        <option value="小學">小學</option>
+                        <option value="中學">中學</option>
                     </select>
                 </div>
                 <div class="col-sm-2 mb-3">
-                    <label class="form-label required-field">Class Size</label>
+                    <label class="form-label">Class Size</label>
                     <input type="number" class="form-control" name="class_size" value="{{ default_class_size }}" required>
                 </div>
                 <div class="col-sm-2 mb-3">
                     <label class="form-label">Boys</label>
-                    <input type="number" class="form-control" name="boys" value="{{ default_boys }}">
+                    <input type="number" class="form-control" name="boys" value="{{ default_boys }}" required>
                 </div>
                 <div class="col-sm-2 mb-3">
                     <label class="form-label">Girls</label>
-                    <input type="number" class="form-control" name="girls" value="{{ default_girls }}">
+                    <input type="number" class="form-control" name="girls" value="{{ default_girls }}" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-sm-4 mb-3">
-                    <label class="form-label required-field">Unit Topic</label>
+                    <label class="form-label">Unit Topic</label>
                     <input type="text" class="form-control" name="topic" value="{{ default_topic }}" required>
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <label class="form-label required-field">Unit Duration (days)</label>
+                    <label class="form-label">Unit Duration (days)</label>
                     <input type="number" class="form-control" name="unit_duration" value="{{ default_unit_duration }}" required>
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <label class="form-label required-field">Day of the unit</label>
+                    <label class="form-label">Day of the Unit</label>
                     <input type="number" class="form-control" name="day_of_unit" value="{{ default_day }}" required>
                 </div>
             </div>
@@ -156,7 +200,7 @@
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">Main Theme of this Lesson</label>
-                    <input type="text" class="form-control" name="lesson_theme" value="{{ default_theme }}">
+                    <input type="text" class="form-control" name="lesson_theme" value="{{ default_theme }}" required>
                 </div>
             </div>
 
@@ -165,7 +209,7 @@
                     <label for="rangeValue" class="form-label">Students' Overall Ability Level (%)</label>
                     <div class="d-flex align-items-center">
                         <span class="me-2">Low</span>
-                        <input type="range" id="rangeInput" name="ability_level" min="0" max="100" value="{{ default_ability }}" class="flex-grow-1">
+                        <input type="range" id="rangeInput" name="ability_level" min="0" max="100" value="{{ default_ability }}" class="flex-grow-1" required>
                         <span class="ms-2">High</span>
                         <span id="rangeValue" class="ms-3">{{ default_ability }}</span>
                     </div>
@@ -175,15 +219,15 @@
             <div class="row mb-3">
                 <div class="col-sm-4 mb-3">
                     <label class="form-label">Beginner (%)</label>
-                    <input type="number" class="form-control" name="beginner_percent" min="0" max="100" value="0">
+                    <input type="number" class="form-control" name="beginner_percent" min="0" max="100" value="0" required>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <label class="form-label">Intermediate (%)</label>
-                    <input type="number" class="form-control" name="intermediate_percent" min="0" max="100" value="0">
+                    <input type="number" class="form-control" name="intermediate_percent" min="0" max="100" value="0" required>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <label class="form-label">Advance (%)</label>
-                    <input type="number" class="form-control" name="advance_percent" min="0" max="100" value="0">
+                    <input type="number" class="form-control" name="advance_percent" min="0" max="100" value="0" required>
                 </div>
             </div>
             
@@ -276,32 +320,45 @@
             <template id="activity-row-template">
                 <div class="activity-row mb-3 p-3 border rounded">
                     <div class="row">
-                        <div class="col-sm-1 mb-3">
+                        <div class="col-sm-2 mb-3">
                             <label class="form-label">Time (mins)</label>
                             <input type="number" class="form-control activity-time" name="" required>
                         </div>
-                        <div class="col-sm-4 mb-3">
+                        <div class="col-sm-10 mb-3">
                             <label class="form-label">Teaching content/ Activity</label>
                             <textarea class="form-control activity-content" name="" rows="1" required></textarea>
                         </div>
-                        <div class="col-sm-4 mb-3">
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6 mb-3">
                             <label class="form-label">Teaching Cues/Objectives</label>
                             <textarea class="form-control activity-cues" name="" rows="1" required></textarea>
                         </div>
-                        <div class="col-sm-2 mb-3">
+                        <div class="col-sm-5 mb-3">
                             <label class="form-label">Equipment</label>
                             <textarea class="form-control activity-equipment" name="" rows="1" required></textarea>
                         </div>
                         <div class="col-sm-1 mb-3">
                             <label class="form-label">&nbsp;</label>
-                            <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-activity-row">Remove</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-activity-row" aria-label="Remove" title="Remove" disabled>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display: inline-block; vertical-align: middle;">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Class Organisation Diagram</label>
-                        <div class="d-flex gap-2">
-                            <input type="file" class="form-control activity-diagram" name="" accept=".png,.jpg,.jpeg,.gif,.svg">
-                            <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                        <div class="d-flex gap-2 align-items-end flex-wrap">
+                            <div class="flex-grow-1" style="min-width: 200px; max-width: 400px;">
+                                <input type="file" class="form-control activity-diagram" name="" accept=".png,.jpg,.jpeg,.gif,.svg">
+                                <div class="file-preview mt-2" style="display: none;">
+                                    <img src="" alt="Preview" class="img-thumbnail" style="max-width: 150px; max-height: 150px;">
+                                    <button type="button" class="btn btn-sm btn-outline-danger ms-2 remove-file-btn">Remove File</button>
+                                </div>
+                            </div>
+                            <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary flex-shrink-0">
                                 Create Diagram
                             </a>
                         </div>
@@ -331,51 +388,51 @@
             <!-- Chinese form fields with placeholders and values -->
             <div class="row">
                 <div class="col-sm-6 mb-3">
-                    <label class="form-label required-field">實習教師姓名</label>
+                    <label class="form-label">實習教師姓名</label>
                     <input type="text" class="form-control" name="teacher_name_zh" value="{{ default_teacher_zh }}" required>
                 </div>
                 <div class="col-sm-2 mb-3">
-                    <label class="form-label required-field">PESH 年級</label>
+                    <label class="form-label">PESH 年級</label>
                     <input type="number" class="form-control" name="pesh_year_zh" value="{{ default_pesh_year }}" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-sm-4 mb-3">
-                    <label class="form-label required-field">日期</label>
+                    <label class="form-label">日期</label>
                     <input type="text" class="form-control" name="date_zh" placeholder="DD/MM/YYYY" value="{{ default_date }}" required>
                 </div>
                 <div class="col-sm-2 mb-3">
-                    <label class="form-label required-field">課時 (分鐘)</label>
+                    <label class="form-label">課時 (分鐘)</label>
                     <input type="number" class="form-control" name="class_duration_zh" value="{{ default_duration }}" required>
                 </div>
                 <div class="col-sm-3 mb-3">
-                    <label class="form-label required-field">開始時間</label>
+                    <label class="form-label">開始時間</label>
                     <input type="time" class="form-control" name="start_time_zh" value="{{ default_start_time }}" required>
                 </div>
                 <div class="col-sm-3 mb-3">
-                    <label class="form-label required-field">結束時間</label>
+                    <label class="form-label">結束時間</label>
                     <input type="time" class="form-control" name="end_time_zh" value="{{ default_end_time }}" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="mb-3">
-                    <label class="form-label required-field">學校名稱</label>
+                    <label class="form-label">學校名稱</label>
                     <input type="text" class="form-control" name="school_name_zh" value="{{ default_school_zh }}" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-sm-2 mb-3">
-                    <label class="form-label required-field">年級</label>
+                    <label class="form-label">年級</label>
                     <input type="number" class="form-control" name="year_zh" value="{{ default_year }}" required>
                 </div>
                 <div class="col-sm-2 mb-3">
-                    <label class="form-label required-field">班別</label>
+                    <label class="form-label">班別</label>
                     <input type="text" class="form-control" name="class_id_zh" value="{{ default_class_zh }}" required>
                 </div>
-                <div class="col-sm-2 mb-3 required-field">
+                <div class="col-sm-2 mb-3">
                     <label class="form-label">Level</label>
                     <select class="form-select" name="class_level" required>
                         <option value="Primary">Primary</option>
@@ -383,30 +440,30 @@
                     </select>
                 </div>
                 <div class="col-sm-2 mb-3">
-                    <label class="form-label required-field">學生人數</label>
+                    <label class="form-label">學生人數</label>
                     <input type="number" class="form-control" name="class_size_zh" value="{{ default_class_size }}" required>
                 </div>
                 <div class="col-sm-2 mb-3">
                     <label class="form-label">男生</label>
-                    <input type="number" class="form-control" name="boys_zh" value="{{ default_boys }}">
+                    <input type="number" class="form-control" name="boys_zh" value="{{ default_boys }}" required>
                 </div>
                 <div class="col-sm-2 mb-3">
                     <label class="form-label">女生</label>
-                    <input type="number" class="form-control" name="girls_zh" value="{{ default_girls }}">
+                    <input type="number" class="form-control" name="girls_zh" value="{{ default_girls }}" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-sm-4 mb-3">
-                    <label class="form-label required-field">單元主題</label>
+                    <label class="form-label">單元主題</label>
                     <input type="text" class="form-control" name="topic_zh" value="{{ default_topic_zh }}" required>
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <label class="form-label required-field">單元總課時 (天)</label>
+                    <label class="form-label">單元總課時 (天)</label>
                     <input type="number" class="form-control" name="unit_duration_zh" value="{{ default_unit_duration }}" required>
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <label class="form-label required-field">第幾課時</label>
+                    <label class="form-label">第幾課時</label>
                     <input type="number" class="form-control" name="day_of_unit_zh" value="{{ default_day }}" required>
                 </div>
             </div>
@@ -423,7 +480,7 @@
                     <label for="rangeValue_zh" class="form-label">學生整體能力水平 (%)</label>
                     <div class="d-flex align-items-center">
                         <span class="me-2">低</span>
-                        <input type="range" id="rangeInput_zh" name="ability_level_zh" min="0" max="100" value="{{ default_ability }}" class="flex-grow-1">
+                    <input type="range" id="rangeInput_zh" name="ability_level_zh" min="0" max="100" value="{{ default_ability }}" class="flex-grow-1" required>
                         <span class="ms-2">高</span>
                         <span id="rangeValue_zh" class="ms-3">{{ default_ability }}</span>
                     </div>
@@ -433,15 +490,15 @@
             <div class="row mb-3">
                 <div class="col-sm-4 mb-3">
                     <label class="form-label">初學者 (%)</label>
-                    <input type="number" class="form-control" name="beginner_percent_zh" min="0" max="100" value="0">
+                    <input type="number" class="form-control" name="beginner_percent_zh" min="0" max="100" value="0" required>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <label class="form-label">中級 (%)</label>
-                    <input type="number" class="form-control" name="intermediate_percent_zh" min="0" max="100" value="0">
+                    <input type="number" class="form-control" name="intermediate_percent_zh" min="0" max="100" value="0" required>
                 </div>
                 <div class="col-sm-4 mb-3">
                     <label class="form-label">高級 (%)</label>
-                    <input type="number" class="form-control" name="advance_percent_zh" min="0" max="100" value="0">
+                    <input type="number" class="form-control" name="advance_percent_zh" min="0" max="100" value="0" required>
                 </div>
             </div>
             
@@ -542,9 +599,9 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">課堂組織圖表</label>
-                    <div class="d-flex gap-2">
-                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
-                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <input type="file" class="form-control flex-grow-1" style="min-width: 150px; max-width: 100%;" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary flex-shrink-0">
                             建立圖表
                         </a>
                     </div>
@@ -570,9 +627,9 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">課堂組織圖表</label>
-                    <div class="d-flex gap-2">
-                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
-                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <input type="file" class="form-control flex-grow-1" style="min-width: 150px; max-width: 100%;" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary flex-shrink-0">
                             建立圖表
                         </a>
                     </div>
@@ -598,9 +655,9 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">課堂組織圖表</label>
-                    <div class="d-flex gap-2">
-                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
-                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <input type="file" class="form-control flex-grow-1" style="min-width: 150px; max-width: 100%;" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary flex-shrink-0">
                             建立圖表
                         </a>
                     </div>
@@ -626,9 +683,9 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">課堂組織圖表</label>
-                    <div class="d-flex gap-2">
-                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
-                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <input type="file" class="form-control flex-grow-1" style="min-width: 150px; max-width: 100%;" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary flex-shrink-0">
                             建立圖表
                         </a>
                     </div>
@@ -666,20 +723,49 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Language selection toggle
+        // Language selection toggle with required handling
         const langRadios = document.querySelectorAll('input[name="template_language"]');
         const englishSection = document.getElementById('english-section');
         const chineseSection = document.getElementById('chinese-section');
-        
+
+        const markInitialRequired = (section) => {
+            section.querySelectorAll('input, select, textarea').forEach(field => {
+                if (field.required) {
+                    field.dataset.wasRequired = 'true';
+                }
+            });
+        };
+
+        const toggleSection = (section, enable) => {
+            section.querySelectorAll('input, select, textarea').forEach(field => {
+                if (enable) {
+                    if (field.dataset.wasRequired === 'true') {
+                        field.required = true;
+                    }
+                } else {
+                    if (field.required) {
+                        field.dataset.wasRequired = 'true';
+                    }
+                    field.required = false;
+                }
+            });
+        };
+
+        const setLanguage = (lang) => {
+            const englishActive = lang === 'english';
+            englishSection.classList.toggle('active', englishActive);
+            chineseSection.classList.toggle('active', !englishActive);
+            toggleSection(englishSection, englishActive);
+            toggleSection(chineseSection, !englishActive);
+        };
+
+        markInitialRequired(englishSection);
+        markInitialRequired(chineseSection);
+        setLanguage('english');
+
         langRadios.forEach(radio => {
             radio.addEventListener('change', function() {
-                if (this.value === 'english') {
-                    englishSection.classList.add('active');
-                    chineseSection.classList.remove('active');
-                } else {
-                    englishSection.classList.remove('active');
-                    chineseSection.classList.add('active');
-                }
+                setLanguage(this.value);
             });
         });
         
@@ -752,6 +838,22 @@
             intro_zh: 0, sd_zh: 0, appli_zh: 0, ca_zh: 0
         };
         
+        // Function to update delete button states based on row count
+        function updateDeleteButtonStates(container) {
+            const rows = container.querySelectorAll('.activity-row');
+            const removeButtons = container.querySelectorAll('.remove-activity-row');
+            
+            removeButtons.forEach(btn => {
+                if (rows.length <= 1) {
+                    btn.disabled = true;
+                    btn.classList.add('disabled');
+                } else {
+                    btn.disabled = false;
+                    btn.classList.remove('disabled');
+                }
+            });
+        }
+        
         function addActivityRow(section, lang) {
             const prefix = lang === 'zh' ? '_zh' : '';
             const container = document.getElementById(`${section}-activities-container${prefix}`);
@@ -767,54 +869,115 @@
             const equipLabel = lang === 'zh' ? '器材' : 'Equipment';
             const diagramLabel = lang === 'zh' ? '課堂組織圖表' : 'Class Organisation Diagram';
             const createDiagram = lang === 'zh' ? '建立圖表' : 'Create Diagram';
-            const removeBtn = lang === 'zh' ? '移除' : 'Remove';
+            const removeRowBtnText = lang === 'zh' ? '移除' : 'Remove';
+            const removeFileBtnText = lang === 'zh' ? '移除檔案' : 'Remove File';
             
             row.innerHTML = `
                 <div class="row">
-                    <div class="col-sm-1 mb-3">
+                    <div class="col-sm-2 mb-3">
                         <label class="form-label">${timeLabel}</label>
                         <input type="number" class="form-control" name="${section}_time_${counter}${prefix}" required>
                     </div>
-                    <div class="col-sm-4 mb-3">
+                    <div class="col-sm-10 mb-3">
                         <label class="form-label">${contentLabel}</label>
                         <textarea class="form-control" name="${section}_content_${counter}${prefix}" rows="1" required></textarea>
                     </div>
-                    <div class="col-sm-4 mb-3">
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
                         <label class="form-label">${cuesLabel}</label>
                         <textarea class="form-control" name="${section}_cues_${counter}${prefix}" rows="1" required></textarea>
                     </div>
-                    <div class="col-sm-2 mb-3">
+                    <div class="col-sm-5 mb-3">
                         <label class="form-label">${equipLabel}</label>
                         <textarea class="form-control" name="${section}_equipment_${counter}${prefix}" rows="1" required></textarea>
                     </div>
                     <div class="col-sm-1 mb-3">
                         <label class="form-label">&nbsp;</label>
-                        <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-activity-row">${removeBtn}</button>
+                        <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-activity-row" aria-label="${removeRowBtnText}" title="${removeRowBtnText}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" style="display: inline-block; vertical-align: middle;">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">${diagramLabel}</label>
-                    <div class="d-flex gap-2">
-                        <input type="file" class="form-control" name="${section}_file_${counter}${prefix}" accept=".png,.jpg,.jpeg,.gif,.svg">
-                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">${createDiagram}</a>
+                    <div class="d-flex gap-2 align-items-end flex-wrap">
+                        <div class="flex-grow-1" style="min-width: 200px; max-width: 400px;">
+                            <input type="file" class="form-control activity-file-input" name="${section}_file_${counter}${prefix}" accept=".png,.jpg,.jpeg,.gif,.svg">
+                            <div class="file-preview mt-2" style="display: none;">
+                                <img src="" alt="Preview" class="img-thumbnail file-preview-img" style="max-width: 150px; max-height: 150px;">
+                                <button type="button" class="btn btn-sm btn-outline-danger ms-2 remove-file-btn">${removeFileBtnText}</button>
+                            </div>
+                        </div>
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary flex-shrink-0">${createDiagram}</a>
                     </div>
                 </div>
             `;
             
             container.appendChild(row);
-            
-            row.querySelector('.remove-activity-row').addEventListener('click', function() {
-                row.remove();
+            row.querySelectorAll('input, textarea').forEach(field => {
+                field.dataset.wasRequired = 'true';
+                field.required = true;
             });
+            
+            // File upload preview functionality
+            const fileInput = row.querySelector('.activity-file-input');
+            const filePreview = row.querySelector('.file-preview');
+            const previewImg = row.querySelector('.file-preview-img');
+            const removeFileBtn = row.querySelector('.remove-file-btn');
+            
+            if (fileInput && filePreview && previewImg && removeFileBtn) {
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            previewImg.src = e.target.result;
+                            filePreview.style.display = 'block';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+                
+                removeFileBtn.addEventListener('click', function() {
+                    fileInput.value = '';
+                    filePreview.style.display = 'none';
+                    previewImg.src = '';
+                });
+            }
+            
+            // Update delete button states (after row is appended)
+            updateDeleteButtonStates(container);
+            
+            // Remove row functionality
+            const removeBtn = row.querySelector('.remove-activity-row');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', function() {
+                    const rows = container.querySelectorAll('.activity-row');
+                    if (rows.length > 1) {
+                        row.remove();
+                        updateDeleteButtonStates(container);
+                    }
+                });
+            }
         }
         
         // Add buttons for English
         ['intro', 'sd', 'appli', 'ca'].forEach(section => {
             const btn = document.getElementById(`add-${section}-row`);
             if (btn) {
-                btn.addEventListener('click', () => addActivityRow(section, ''));
+                btn.addEventListener('click', () => {
+                    addActivityRow(section, '');
+                    const container = document.getElementById(`${section}-activities-container`);
+                    updateDeleteButtonStates(container);
+                });
                 // Add initial row
                 addActivityRow(section, '');
+                const container = document.getElementById(`${section}-activities-container`);
+                updateDeleteButtonStates(container);
             }
         });
         
@@ -822,11 +985,20 @@
         ['intro', 'sd', 'appli', 'ca'].forEach(section => {
             const btn = document.getElementById(`add-${section}-row-zh`);
             if (btn) {
-                btn.addEventListener('click', () => addActivityRow(section, 'zh'));
+                btn.addEventListener('click', () => {
+                    addActivityRow(section, 'zh');
+                    const container = document.getElementById(`${section}-activities-container_zh`);
+                    updateDeleteButtonStates(container);
+                });
                 // Add initial row
                 addActivityRow(section, 'zh');
+                const container = document.getElementById(`${section}-activities-container_zh`);
+                updateDeleteButtonStates(container);
             }
         });
+
+        // Ensure required flags reflect selected language after prepopulation
+        setLanguage(document.querySelector('input[name="template_language"]:checked')?.value || 'english');
     });
 </script>
 {% endblock %}

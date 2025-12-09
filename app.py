@@ -61,6 +61,7 @@ def create_unit_form():
 @app.route('/create-lesson', methods=['POST'])
 def create_lesson():
     # Extract form data - English fields
+    template_language = request.form.get('template_language', 'english')
     teacher_name = request.form.get('teacher_name')
     pesh_year = request.form.get('pesh_year')
     date = request.form.get('date')
@@ -133,9 +134,20 @@ def create_lesson():
     
     # Extract Chinese form data
     teacher_name_zh = request.form.get('teacher_name_zh')
+    pesh_year_zh = request.form.get('pesh_year_zh')
+    date_zh = request.form.get('date_zh')
+    class_duration_zh = request.form.get('class_duration_zh')
+    start_time_zh = request.form.get('start_time_zh')
+    end_time_zh = request.form.get('end_time_zh')
     school_name_zh = request.form.get('school_name_zh')
+    year_zh = request.form.get('year_zh')
     class_id_zh = request.form.get('class_id_zh')
     class_level_zh = request.form.get('class_level_zh')
+    class_size_zh = request.form.get('class_size_zh')
+    boys_zh = request.form.get('boys_zh')
+    girls_zh = request.form.get('girls_zh')
+    unit_duration_zh = request.form.get('unit_duration_zh')
+    day_of_unit_zh = request.form.get('day_of_unit_zh')
     topic_zh = request.form.get('topic_zh')
     lesson_theme_zh = request.form.get('lesson_theme_zh')
     ability_level_zh = request.form.get('ability_level_zh')
@@ -160,6 +172,7 @@ def create_lesson():
     # Create new plan with all fields
     new_plan = {
         'id': len(lesson_plans) + 1,
+        'template_language': template_language,
         # English fields
         'teacher_name': teacher_name,
         'pesh_year': pesh_year,
@@ -197,9 +210,20 @@ def create_lesson():
         
         # Chinese fields
         'teacher_name_zh': teacher_name_zh,
+        'pesh_year_zh': pesh_year_zh,
+        'date_zh': date_zh,
+        'class_duration_zh': class_duration_zh,
+        'start_time_zh': start_time_zh,
+        'end_time_zh': end_time_zh,
         'school_name_zh': school_name_zh,
+        'year_zh': year_zh,
         'class_id_zh': class_id_zh,
         'class_level_zh': class_level_zh,
+        'class_size_zh': class_size_zh,
+        'boys_zh': boys_zh,
+        'girls_zh': girls_zh,
+        'unit_duration_zh': unit_duration_zh,
+        'day_of_unit_zh': day_of_unit_zh,
         'topic_zh': topic_zh,
         'lesson_theme_zh': lesson_theme_zh,
         'ability_level_zh': ability_level_zh,
@@ -229,9 +253,11 @@ def create_lesson():
 @app.route('/create-unit', methods=['POST'])
 def create_unit():
     # Extract unit plan data
+    template_language = request.form.get('template_language', 'english')
     unit_data = {
         'id': len(unit_plans) + 1,
         'created_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'template_language': template_language,
         
         # English fields
         'unit_topic': request.form.get('unit_topic'),
@@ -317,6 +343,7 @@ def create_unit():
         'enhancing_motivation_zh': request.form.get('enhancing_motivation_zh'),
         'safety_precautions_zh': request.form.get('safety_precautions_zh'),
         'other_considerations_zh': request.form.get('other_considerations_zh'),
+        'references_zh': request.form.get('references_zh'),
     })
 
     # Add Chinese unit contents - dynamic days

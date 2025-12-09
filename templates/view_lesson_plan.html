@@ -57,14 +57,88 @@
     }
     .inline-elements {
         margin-right: 1rem;
+        display: inline-block;
     }
     .inline-elements:last-child {
         margin-right: 0;
+    }
+    .ability-bar {
+        position: relative;
+        height: 12px;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        background: #f8f9fa;
+        margin-bottom: 0.35rem;
+    }
+    .ability-divider {
+        position: absolute;
+        top: -2px;
+        bottom: -2px;
+        width: 2px;
+        background: #6c757d;
+    }
+    .ability-bar-wrapper {
+        margin-bottom: 0.5rem;
+    }
+    .ability-labels-absolute {
+        position: relative;
+        height: 1.5rem;
+        margin-top: 0.25rem;
+    }
+    .ability-labels-absolute span {
+        position: absolute;
+        transform: translateX(-50%);
+        text-align: center;
+        white-space: nowrap;
+        font-size: 0.75rem;
+    }
+    @media (max-width: 576px) {
+        .ability-labels-absolute {
+            height: 3rem;
+        }
+        .ability-labels-absolute span {
+            white-space: normal;
+            font-size: 0.7rem;
+            line-height: 1.2;
+        }
+        .lesson-table {
+            font-size: 0.85rem;
+        }
+        .lesson-table th,
+        .lesson-table td {
+            padding: 6px 4px;
+        }
+        .inline-elements {
+            display: block;
+            margin-right: 0;
+            margin-bottom: 0.25rem;
+        }
+        .section-title {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+        .lesson-section {
+            margin-bottom: 1.5rem;
+        }
+    }
+    @media (max-width: 768px) {
+        .lesson-table th,
+        .lesson-table td {
+            padding: 6px;
+            font-size: 0.9rem;
+        }
+        .inline-elements {
+            margin-right: 0.5rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
+{% set lang = plan.template_language %}
+{% set show_en = (not lang) or lang == 'english' %}
+{% set show_zh = (not lang) or lang == 'chinese' %}
+
 <!-- Success Message with Feedback Prompt -->
 <div class="success-message no-print">
     <h5>Lesson plan created successfully!</h5>
@@ -74,6 +148,7 @@
     </p>
 </div>
 
+{% if show_en %}
 <!-- ENGLISH LESSON PLAN -->
 <div class="lesson-section">
     <h1 style="margin-top:0pt; margin-bottom:0pt; text-align:center; line-height:18pt;">
@@ -82,33 +157,54 @@
     
     <!-- Basic Information -->
     <p><strong>Lesson Plan ID:</strong> {{ plan.id }}</p>
-    <p><strong>Student-teacher's name:</strong> {{ plan.teacher_name }} (PESH Year {{ plan.pesh_year }})</p>
+    <p><span class="inline-elements"><strong>Student-teacher's name:</strong> {{ plan.teacher_name }}</span><span class="inline-elements">(PESH Year {{ plan.pesh_year }})</span></p>
     <p>
-        <strong class="inline-elements">Date:</strong> <span class="inline-elements">{{ plan.date }}</span>
-        <strong class="inline-elements">Time:</strong> <span class="inline-elements">{{ plan.class_duration }} mins ({{ plan.start_time }} to {{ plan.end_time }})</span>
+        <span class="inline-elements"><strong>Date:</strong> {{ plan.date }}</span>
+        <span class="inline-elements"><strong>Time:</strong> {{ plan.class_duration }} mins ({{ plan.start_time }} to {{ plan.end_time }})</span>
     </p>
     <p><strong>School Name:</strong> {{ plan.school_name }}</p>
     <p>
-        <strong class="inline-elements">Year:</strong> <span class="inline-elements">{{ plan.year }}</span>
-        <strong class="inline-elements">Class:</strong> <span class="inline-elements">{{ plan.class_id }}</span>
-        <strong class="inline-elements">Level:</strong> <span class="inline-elements">{{ plan.class_level }}</span>
-        <strong class="inline-elements">Class Size:</strong> <span class="inline-elements">{{ plan.class_size }}</span>
-        <span class="inline-elements">(Boys: {{ plan.boys }} Girls: {{ plan.girls }})</span>
+        <span class="inline-elements"><strong>Year:</strong> {{ plan.year }}</span>
+        <span class="inline-elements"><strong>Class:</strong> {{ plan.class_id }}</span>
+        <span class="inline-elements"><strong>Level:</strong> {{ plan.class_level }}</span>
+        <span class="inline-elements"><strong>Class Size:</strong> {{ plan.class_size }}</span>
+        <span class="inline-elements"><strong>Boys:</strong> {{ plan.boys }}</span>
+        <span class="inline-elements"><strong>Girls:</strong> {{ plan.girls }}</span>
     </p>
-    <p><strong>Unit Topic: </strong>{{ plan.topic }} (Day {{ plan.day_of_unit }} of the unit of {{ plan.unit_duration }} days)</p>
+    <p><strong>Unit Topic: </strong>{{ plan.topic }} <span class="inline-elements">(Day {{ plan.day_of_unit }} of {{ plan.unit_duration }} days)</span></p>
     <p><strong>Main Theme of this Lesson:</strong> {{ plan.lesson_theme }}</p>
+    {% set beg = (plan.beginner_percent or 0) | int %}
+    {% set inter = (plan.intermediate_percent or 0) | int %}
+    {% set adv = (plan.advance_percent or 0) | int %}
+    {% set total = beg + inter + adv %}
     <p><strong>Students' Overall Ability Level:</strong> {{ plan.ability_level }}% proficiency</p>
-    {% if plan.beginner_percent or plan.intermediate_percent or plan.advance_percent %}
-    <p>
-        <strong class="inline-elements">Beginner:</strong> <span class="inline-elements">{{ plan.beginner_percent }}%</span>
-        <strong class="inline-elements">Intermediate:</strong> <span class="inline-elements">{{ plan.intermediate_percent }}%</span>
-        <strong class="inline-elements">Advance:</strong> <span class="inline-elements">{{ plan.advance_percent }}%</span>
-    </p>
-    {% endif %}
-    <p></p>
+    <ul class="list-unstyled ms-3 mb-2">
+        <li>Beginner: {{ beg }}%</li>
+        <li>Intermediate: {{ inter }}%</li>
+        <li>Advance: {{ adv }}%</li>
+    </ul>
+    <div class="ability-bar-wrapper" style="position: relative;">
+        <div class="ability-bar" aria-hidden="true">
+            {% if total > 0 %}
+                <div class="ability-divider" style="left: {{ beg }}%;"></div>
+                <div class="ability-divider" style="left: {{ beg + inter }}%;"></div>
+            {% endif %}
+        </div>
+        {% if total > 0 %}
+            {% set beg_pos = (beg / 2) %}
+            {% set inter_pos = beg + (inter / 2) %}
+            {% set adv_pos = beg + inter + (adv / 2) %}
+            <div class="ability-labels-absolute small text-muted">
+                <span style="left: {{ beg_pos }}%;">Beginner {{ beg }}%</span>
+                <span style="left: {{ inter_pos }}%;">Intermediate {{ inter }}%</span>
+                <span style="left: {{ adv_pos }}%;">Advance {{ adv }}%</span>
+            </div>
+        {% endif %}
+    </div>
 
     <!-- Objectives Table -->
-    <h4 class="section-title">1) Lesson Objectives: Students will be able to:</h4>
+    <h4 class="section-title">1) Lesson Objectives:</h4>
+    <p class="mb-2">Students will be able to:</p>
     <table class="lesson-table">
         <tbody>
             <tr>
@@ -159,7 +255,7 @@
                 {% for activity in plan.intro_activities %}
                 <tr>
                     <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
-                    <td><strong>{% if loop.first %}Introductory Activities{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td>{% if loop.first %}<strong>Introductory Activities</strong><br>{% endif %}{{ activity.content or '' }}</td>
                     <td style="text-align: center;">{{ activity.cues }}</td>
                     <td style="text-align: center;">
                         {% if activity.diagram %}
@@ -192,7 +288,7 @@
                 {% for activity in plan.sd_activities %}
                 <tr>
                     <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
-                    <td><strong>{% if loop.first %}Skill Development{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td>{% if loop.first %}<strong>Skill Development</strong><br>{% endif %}{{ activity.content or '' }}</td>
                     <td style="text-align: center;">{{ activity.cues }}</td>
                     <td style="text-align: center;">
                         {% if activity.diagram %}
@@ -225,7 +321,7 @@
                 {% for activity in plan.appli_activities %}
                 <tr>
                     <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
-                    <td><strong>{% if loop.first %}Application{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td>{% if loop.first %}<strong>Application</strong><br>{% endif %}{{ activity.content or '' }}</td>
                     <td style="text-align: center;">{{ activity.cues }}</td>
                     <td style="text-align: center;">
                         {% if activity.diagram %}
@@ -258,7 +354,7 @@
                 {% for activity in plan.ca_activities %}
                 <tr>
                     <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
-                    <td><strong>{% if loop.first %}Concluding Activities{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td>{% if loop.first %}<strong>Concluding Activities</strong><br>{% endif %}{{ activity.content or '' }}</td>
                     <td style="text-align: center;">{{ activity.cues }}</td>
                     <td style="text-align: center;">
                         {% if activity.diagram %}
@@ -290,45 +386,70 @@
 
     <!-- Follow-up and Reflection -->
     <h4 class="section-title">3) After Lesson:</h4>
+    <h5 class="fw-bold fs-6">Follow-up Actions:</h5>
     <p>{{ plan.followup_actions }}</p>
 
-    <h4 class="section-title">4) Self-reflection:</h4>
+    <h5 class="fw-bold fs-6 mt-3">Self-reflection:</h5>
     <p>{{ plan.self_reflection }}</p>
 </div>
 
+{% if show_zh %}
 <div class="page-break"></div>
+{% endif %}
+{% endif %}
 
 <!-- CHINESE LESSON PLAN -->
+{% if show_zh %}
 <div class="lesson-section chinese-section">
     <h1 style="text-align: center; line-height: 18pt;">
         <strong><u>教案</u></strong>
     </h1>
     
     <!-- Chinese Header Information -->
-    <p><strong>實習教師姓名:</strong> {{ plan.teacher_name_zh }} (PESH Year {{ plan.pesh_year }})</p>
+    <p><span class="inline-elements"><strong>實習教師姓名:</strong> {{ plan.teacher_name_zh }}</span><span class="inline-elements">(PESH Year {{ plan.pesh_year_zh or plan.pesh_year }})</span></p>
     <p>
-        <strong class="inline-elements">日期:</strong> <span class="inline-elements">{{ plan.date }}</span>
-        <strong class="inline-elements">上課時間:</strong> <span class="inline-elements">{{ plan.class_duration }}分鐘 ({{ plan.start_time }} 至 {{ plan.end_time }})</span>
+        <span class="inline-elements"><strong>日期:</strong> {{ plan.date_zh or plan.date }}</span>
+        <span class="inline-elements"><strong>上課時間:</strong> {{ plan.class_duration_zh or plan.class_duration }}分鐘 ({{ plan.start_time_zh or plan.start_time }} 至 {{ plan.end_time_zh or plan.end_time }})</span>
     </p>
     <p><strong>學校名稱:</strong> {{ plan.school_name_zh }}</p>
     <p>
-        <strong class="inline-elements">班級:</strong> <span class="inline-elements">{{ plan.year }}</span>
-        <strong class="inline-elements">班別:</strong> <span class="inline-elements">{{ plan.class_id_zh }}</span>
-        <strong class="inline-elements">類別:</strong> <span class="inline-elements">{{ plan.class_level_zh }}</span>
-        <strong class="inline-elements">學生人數:</strong> <span class="inline-elements">{{ plan.class_size }}</span>
-        <span class="inline-elements">(男生: {{ plan.boys }} 女生: {{ plan.girls }})</span>
+        <span class="inline-elements"><strong>班級:</strong> {{ plan.year_zh or plan.year }}</span>
+        <span class="inline-elements"><strong>班別:</strong> {{ plan.class_id_zh }}</span>
+        <span class="inline-elements"><strong>類別:</strong> {{ plan.class_level_zh }}</span>
+        <span class="inline-elements"><strong>學生人數:</strong> {{ plan.class_size_zh or plan.class_size }}</span>
+        <span class="inline-elements"><strong>男生:</strong> {{ plan.boys_zh or plan.boys }}</span>
+        <span class="inline-elements"><strong>女生:</strong> {{ plan.girls_zh or plan.girls }}</span>
     </p>
-    <p><strong>單元主題: </strong>{{ plan.topic_zh }} (第 {{ plan.day_of_unit }} 課時 of the unit of {{ plan.unit_duration }} 天)</p>
+    <p><strong>單元主題: </strong>{{ plan.topic_zh }} <span class="inline-elements">(第 {{ plan.day_of_unit_zh or plan.day_of_unit }} 課時 / {{ plan.unit_duration_zh or plan.unit_duration }} 天)</span></p>
     <p><strong>本教節的教學主題:</strong> {{ plan.lesson_theme_zh }}</p>
+    {% set beg_zh = (plan.beginner_percent_zh or 0) | int %}
+    {% set inter_zh = (plan.intermediate_percent_zh or 0) | int %}
+    {% set adv_zh = (plan.advance_percent_zh or 0) | int %}
+    {% set total_zh = beg_zh + inter_zh + adv_zh %}
     <p><strong>學生整體能力水平:</strong> {{ plan.ability_level_zh or plan.ability_level }}% 熟練度</p>
-    {% if plan.beginner_percent_zh or plan.intermediate_percent_zh or plan.advance_percent_zh %}
-    <p>
-        <strong class="inline-elements">初學者:</strong> <span class="inline-elements">{{ plan.beginner_percent_zh }}%</span>
-        <strong class="inline-elements">中級:</strong> <span class="inline-elements">{{ plan.intermediate_percent_zh }}%</span>
-        <strong class="inline-elements">高級:</strong> <span class="inline-elements">{{ plan.advance_percent_zh }}%</span>
-    </p>
-    {% endif %}
-    <p></p>
+    <ul class="list-unstyled ms-3 mb-2">
+        <li>初學者: {{ beg_zh }}%</li>
+        <li>中級: {{ inter_zh }}%</li>
+        <li>高級: {{ adv_zh }}%</li>
+    </ul>
+    <div class="ability-bar-wrapper" style="position: relative;">
+        <div class="ability-bar" aria-hidden="true">
+            {% if total_zh > 0 %}
+                <div class="ability-divider" style="left: {{ beg_zh }}%;"></div>
+                <div class="ability-divider" style="left: {{ beg_zh + inter_zh }}%;"></div>
+            {% endif %}
+        </div>
+        {% if total_zh > 0 %}
+            {% set beg_pos_zh = (beg_zh / 2) %}
+            {% set inter_pos_zh = beg_zh + (inter_zh / 2) %}
+            {% set adv_pos_zh = beg_zh + inter_zh + (adv_zh / 2) %}
+            <div class="ability-labels-absolute small text-muted">
+                <span style="left: {{ beg_pos_zh }}%;">初學者 {{ beg_zh }}%</span>
+                <span style="left: {{ inter_pos_zh }}%;">中級 {{ inter_zh }}%</span>
+                <span style="left: {{ adv_pos_zh }}%;">高級 {{ adv_zh }}%</span>
+            </div>
+        {% endif %}
+    </div>
 
     <!-- Chinese Objectives Table -->
     <h4 class="section-title">1) 教學目標：學生將能</h4>
@@ -382,7 +503,7 @@
                 {% for activity in plan.intro_activities_zh %}
                 <tr>
                     <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
-                    <td><strong>{% if loop.first %}引入活動{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td>{% if loop.first %}<strong>引入活動</strong><br>{% endif %}{{ activity.content or '' }}</td>
                     <td style="text-align: center;">{{ activity.cues }}</td>
                     <td style="text-align: center;">
                         {% if activity.diagram %}
@@ -415,7 +536,7 @@
                 {% for activity in plan.sd_activities_zh %}
                 <tr>
                     <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
-                    <td><strong>{% if loop.first %}技能發展{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td>{% if loop.first %}<strong>技能發展</strong><br>{% endif %}{{ activity.content or '' }}</td>
                     <td style="text-align: center;">{{ activity.cues }}</td>
                     <td style="text-align: center;">
                         {% if activity.diagram %}
@@ -448,7 +569,7 @@
                 {% for activity in plan.appli_activities_zh %}
                 <tr>
                     <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
-                    <td><strong>{% if loop.first %}鞏固/應用活動{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td>{% if loop.first %}<strong>鞏固/應用活動</strong><br>{% endif %}{{ activity.content or '' }}</td>
                     <td style="text-align: center;">{{ activity.cues }}</td>
                     <td style="text-align: center;">
                         {% if activity.diagram %}
@@ -481,7 +602,7 @@
                 {% for activity in plan.ca_activities_zh %}
                 <tr>
                     <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
-                    <td><strong>{% if loop.first %}整理活動{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td>{% if loop.first %}<strong>整理活動</strong><br>{% endif %}{{ activity.content or '' }}</td>
                     <td style="text-align: center;">{{ activity.cues }}</td>
                     <td style="text-align: center;">
                         {% if activity.diagram %}
@@ -513,11 +634,16 @@
 
     <!-- Chinese Follow-up and Reflection -->
     <h4 class="section-title">3) 課堂完結後：</h4>
+    <h5 class="fw-bold fs-6">跟進事項:</h5>
     <p>{{ plan.followup_actions_zh }}</p>
 
-    <h4 class="section-title">4) 自我反思:</h4>
+    <h5 class="fw-bold fs-6 mt-3">自我反思:</h5>
     <p>{{ plan.self_reflection_zh }}</p>
 </div>
+
+<p class="text-center fw-semibold mt-4">CUHK Faculty of Education</p>
+
+{% endif %}
 
 <!-- Action Buttons -->
 <div class="text-center mt-4 no-print">
@@ -525,9 +651,6 @@
     <a href="{{ url_for('create_lesson_form') }}" class="btn btn-outline-primary me-2">Create Another Lesson Plan</a>
     <a href="{{ url_for('create_unit_form') }}" class="btn btn-outline-primary me-2">Create Unit Plan</a>
     <button onclick="window.print()" class="btn btn-outline-primary me-2">Print Plan</button>
-    <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#feedbackModal">
-        Feedback
-    </button>
 </div>
 
 <button onclick="window.print()" class="btn btn-primary print-btn no-print">
