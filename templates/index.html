@@ -1,51 +1,243 @@
 {% extends "base.html" %}
 
-{% block title %}staffroom{% endblock %}
-
 {% block styles %}
 <style>
-    .hero-section {
-        background: linear-gradient(135deg, #DDA52D, #69256B);
-        color: white;
-        padding: 4rem 0;
-        border-radius: 0 0 20px 20px;
+    /* Hero Section */
+    .hero-wrapper {
+        position: relative;
+        min-height: 90vh;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        /* Removed negative margin to prevent navbar overlap */
+    }
+
+    .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    .shape {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.3;
+        transition: transform 0.2s ease-out;
+    }
+
+    .shape-1 { width: 400px; height: 400px; background: var(--primary); top: -100px; left: -100px; }
+    .shape-2 { width: 300px; height: 300px; background: var(--accent); bottom: 10%; right: -50px; }
+    .shape-3 { width: 150px; height: 150px; border: 20px solid var(--primary); top: 20%; right: 20%; background: transparent; }
+    .shape-4 { width: 100px; height: 100px; background: var(--accent); top: 50%; left: 15%; border-radius: 0; transform: rotate(45deg); }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        max-width: 800px;
+        padding: 2rem;
+    }
+
+    .hero-title {
+        font-size: 5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        color: var(--primary);
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeUp 1s forwards 0.5s;
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        color: #666;
+        margin-bottom: 3rem;
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeUp 1s forwards 0.8s;
+    }
+
+    .hero-btns {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeUp 1s forwards 1.1s;
+    }
+
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Split Section */
+    .split-section {
+        display: flex;
+        flex-wrap: wrap;
+        min-height: 60vh;
+    }
+
+    .split-col {
+        flex: 1;
+        min-width: 300px;
+        padding: 4rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .split-col:hover {
+        flex: 1.2;
+        background: var(--light);
+    }
+
+    .split-col-content {
+        position: relative;
+        z-index: 2;
+        transition: transform 0.5s ease;
+    }
+    
+    .split-col:hover .split-col-content {
+        transform: translateX(10px);
+    }
+
+    .big-number {
+        font-size: 8rem;
+        font-weight: 800;
+        color: rgba(75, 0, 130, 0.3);
+        position: absolute;
+        top: 0;
+        right: 0;
+        line-height: 0.8;
+        transition: color 0.3s;
+    }
+
+    .split-col:hover .big-number {
+        color: rgba(75, 0, 130, 0.7);
+    }
+
+    .card-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        height: 100%;
+    }
+
+    /* Abstract details */
+    .line-deco {
+        width: 50px;
+        height: 4px;
+        background: var(--accent);
         margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .hero-title { font-size: 3rem; }
+        .split-section { display: block; }
     }
 </style>
 {% endblock %}
 
-{% block content %}
-<div class="hero-section text-center">
-    <div class="container">
-        <h1 class="display-4"><strong>staffroom</strong></h1>
-        <p class="lead">Your tool for creating standardized physical education plans.</p>
-        <div class="mt-4">
-            <a href="{{ url_for('create_unit_form') }}" class="btn btn-outline-light btn-lg">New Unit Plan</a>
-            <a href="{{ url_for('create_lesson_form') }}" class="btn btn-light btn-lg me-3">New Lesson Plan</a>
+{% block hero %}
+<div class="hero-wrapper" id="hero">
+    <div class="hero-bg" id="heroBg">
+        <div class="shape shape-1" data-speed="2"></div>
+        <div class="shape shape-2" data-speed="-1.5"></div>
+        <div class="shape shape-3" data-speed="1"></div>
+        <div class="shape shape-4" data-speed="-2"></div>
+    </div>
+    <div class="hero-content">
+        <h1 class="hero-title">
+            staffroom
+        </h1>
+        <p class="hero-subtitle">
+            Where professionals design and organize courses that inspire.
+        </p>
+        <div class="hero-btns">
+            <a href="#plans" class="btn btn-primary btn-lg rounded-pill px-5 py-3 me-3">Get Started</a>
+            <a href="{{ url_for('diagram_tool') }}" class="btn btn-outline-primary btn-lg rounded-pill px-5 py-3">Diagram Tool</a>
         </div>
     </div>
 </div>
 
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Unit Plans</h5>
-                    <p class="card-text">Create unit plans with multiple lessons and their objectives.</p>
-                    <a href="{{ url_for('create_unit_form') }}" class="btn btn-primary">Create Unit Plan</a>
-                </div>
-            </div>
+<div id="plans" class="split-section">
+    <!-- Unit Plans -->
+    <a href="{{ url_for('create_unit_form') }}" class="split-col card-link group">
+        <div class="big-number">01</div>
+        <div class="split-col-content">
+            <div class="line-deco"></div>
+            <h2 class="display-4 fw-bold mb-3">Unit Plans</h2>
+            <p class="lead text-muted">Create unit plans with multiple lessons and their objectives.</p>
+            <span class="btn btn-link text-primary ps-0 text-decoration-none fw-bold mt-3">
+                Create Unit Plan <span class="ms-2">→</span>
+            </span>
         </div>
-        <div class="col-md-6 mb-4">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Lesson Plans</h5>
-                    <p class="card-text">Create detailed individual lesson plans with activities, timing, and diagrams.</p>
-                    <a href="{{ url_for('create_lesson_form') }}" class="btn btn-primary">Create Lesson Plan</a>
-                </div>
-            </div>
+    </a>
+
+    <!-- Lesson Plans -->
+    <a href="{{ url_for('create_lesson_form') }}" class="split-col card-link group" style="background: #fafafa;">
+        <div class="big-number">02</div>
+        <div class="split-col-content">
+            <div class="line-deco" style="background: var(--primary);"></div>
+            <h2 class="display-4 fw-bold mb-3">Lesson Plans</h2>
+            <p class="lead text-muted">Create detailed individual lesson plans with activities, timing and diagrams.</p>
+            <span class="btn btn-link text-primary ps-0 text-decoration-none fw-bold mt-3">
+                Create Lesson Plan <span class="ms-2">→</span>
+            </span>
         </div>
-    </div>
+    </a>
 </div>
+{% endblock %}
+
+{% block content %}
+<!-- Empty content block as we used hero and split section -->
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const hero = document.getElementById('hero');
+        const shapes = document.querySelectorAll('.shape');
+
+        hero.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            shapes.forEach(shape => {
+                const speed = shape.getAttribute('data-speed');
+                const xOffset = (window.innerWidth / 2 - e.clientX) * speed * 0.05;
+                const yOffset = (window.innerHeight / 2 - e.clientY) * speed * 0.05;
+                
+                shape.style.transform = `translate(${xOffset}px, ${yOffset}px) rotate(${xOffset * 0.2}deg)`;
+            });
+        });
+
+        // Intersection Observer for scroll reveals
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.split-col').forEach(el => observer.observe(el));
+    });
+</script>
 {% endblock %}
