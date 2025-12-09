@@ -56,6 +56,12 @@
         padding-bottom: 0.5rem;
         margin: 2rem 0 1rem 0;
     }
+    .inline-elements {
+        margin-right: 1rem;
+    }
+    .inline-elements:last-child {
+        margin-right: 0;
+    }
 </style>
 {% endblock %}
 
@@ -80,18 +86,19 @@
     <p><strong>Unit/Topic:</strong> {{ plan.unit_topic }}</p>
     <p><strong>Number of Lessons:</strong> {{ plan.number_of_lessons }}</p>
     <p><strong>Period:</strong> {{ plan.period }}</p>
-    <p><strong>Class:</strong> {{ plan.class_info }} 
-       <strong>Level:</strong> {{ plan.class_level }} 
-       <strong>Class Size:</strong> {{ plan.class_size }} 
+    <p>
+       <strong class="inline-elements">Class:</strong> <span class="inline-elements">{{ plan.class_info }}</span>
+       <strong class="inline-elements">Level:</strong> <span class="inline-elements">{{ plan.class_level }}</span>
+       <strong class="inline-elements">Class Size:</strong> <span class="inline-elements">{{ plan.class_size }}</span>
        {% if plan.boys or plan.girls %}
-       (Boys: {{ plan.boys }} Girls: {{ plan.girls }})
+       <span class="inline-elements">(Boys: {{ plan.boys }} Girls: {{ plan.girls }})</span>
        {% endif %}
     </p>
     <p><strong>Teaching Venue/Facilities:</strong> {{ plan.venue }}</p>
     <p><strong>Equipment:</strong> {{ plan.equipment }}</p>
 
     <!-- Unit Overview -->
-    <h4 class="section-title">1.) Unit Overview:</h4>
+    <h4 class="section-title">1) Unit Overview:</h4>
     <p><strong>Overview:</strong> {{ plan.unit_overview }}</p>
 
     <!-- Unit Details Table -->
@@ -121,7 +128,7 @@
     </table>
 
     <!-- Objectives -->
-    <h4 class="section-title">2.) Objectives for this Unit:</h4>
+    <h4 class="section-title">2) Objectives for this Unit:</h4>
     <table class="unit-table">
         <tbody>
             <tr>
@@ -146,7 +153,7 @@
     </table>
 
     <!-- Student Characteristics -->
-    <h4 class="section-title">3.) Student Characteristics:</h4>
+    <h4 class="section-title">3) Student Characteristics:</h4>
     <table class="unit-table">
         <thead>
             <tr>
@@ -175,7 +182,7 @@
     </table>
 
     <!-- Approaches -->
-    <h4 class="section-title">4.) Approaches/Ways to Handle:</h4>
+    <h4 class="section-title">4) Approaches/Ways to Handle:</h4>
     <table class="unit-table">
         <tbody>
             <tr>
@@ -198,7 +205,7 @@
     <p>{{ plan.safety_precautions }}</p>
 
     <!-- Unit Contents -->
-    <h4 class="section-title">5.) Unit Contents:</h4>
+    <h4 class="section-title">5) Unit Contents:</h4>
     <table class="unit-table">
         <thead>
             <tr>
@@ -221,10 +228,10 @@
     </table>
 
     <!-- Other Considerations -->
-    <h4 class="section-title">6.) Other Considerations:</h4>
+    <h4 class="section-title">6) Other Considerations:</h4>
     <p>{{ plan.other_considerations }}</p>
 
-    <h4 class="section-title">7.) References:</h4>
+    <h4 class="section-title">7) References:</h4>
     <p>{{ plan.references or 'No references provided.' }}</p>
 </div>
 
@@ -241,18 +248,19 @@
     <p><strong>單元/主題:</strong> {{ plan.unit_topic_zh }}</p>
     <p><strong>課節總數:</strong> {{ plan.number_of_lessons_zh }}</p>
     <p><strong>期間:</strong> {{ plan.period_zh }}</p>
-    <p><strong>班級:</strong> {{ plan.class_info_zh }} 
-       <strong>級別:</strong> {{ plan.class_level_zh }} 
-       <strong>學生人數:</strong> {{ plan.class_size_zh }} 
+    <p>
+       <strong class="inline-elements">班級:</strong> <span class="inline-elements">{{ plan.class_info_zh }}</span>
+       <strong class="inline-elements">類別:</strong> <span class="inline-elements">{{ plan.class_level_zh }}</span>
+       <strong class="inline-elements">學生人數:</strong> <span class="inline-elements">{{ plan.class_size_zh }}</span>
        {% if plan.boys_zh or plan.girls_zh %}
-       (男生: {{ plan.boys_zh }} 女生: {{ plan.girls_zh }})
+       <span class="inline-elements">(男生: {{ plan.boys_zh }} 女生: {{ plan.girls_zh }})</span>
        {% endif %}
     </p>
     <p><strong>教學場地/設施:</strong> {{ plan.venue_zh }}</p>
     <p><strong>器材/用具:</strong> {{ plan.equipment_zh }}</p>
 
     <!-- Chinese Unit Overview -->
-    <h4 class="section-title">1.) 單元概述:</h4>
+    <h4 class="section-title">1) 單元概述:</h4>
     <p><strong>概述:</strong> {{ plan.unit_overview_zh }}</p>
 
     <!-- Chinese Unit Details Table -->
@@ -282,7 +290,7 @@
     </table>
 
     <!-- Chinese Objectives -->
-    <h4 class="section-title">2.) 本單元目標:</h4>
+    <h4 class="section-title">2) 本單元目標:</h4>
     <table class="unit-table">
         <tbody>
             <tr>
@@ -307,7 +315,7 @@
     </table>
 
     <!-- Chinese Student Characteristics -->
-    <h4 class="section-title">3.) 學生特徵:</h4>
+    <h4 class="section-title">3) 學生特徵:</h4>
     <table class="unit-table">
         <thead>
             <tr>
@@ -336,7 +344,7 @@
     </table>
 
     <!-- Chinese Approaches -->
-    <h4 class="section-title">4.) 處理方法:</h4>
+    <h4 class="section-title">4) 處理方法:</h4>
     <table class="unit-table">
         <tbody>
             <tr>
@@ -359,7 +367,7 @@
     <p>{{ plan.safety_precautions_zh }}</p>
 
     <!-- Chinese Unit Contents -->
-    <h4 class="section-title">5.) 單元內容:</h4>
+    <h4 class="section-title">5) 單元內容:</h4>
     <table class="unit-table">
         <thead>
             <tr>
@@ -382,16 +390,17 @@
     </table>
 
     <!-- Chinese Other Considerations -->
-    <h4 class="section-title">6.) 其他注意事項:</h4>
+    <h4 class="section-title">6) 其他注意事項:</h4>
     <p>{{ plan.other_considerations_zh }}</p>
 
-    <h4 class="section-title">7.) 參考資料:</h4>
+    <h4 class="section-title">7) 參考資料:</h4>
     <p>{{ plan.references or '沒有提供參考資料。' }}</p>
 </div>
 
 <!-- Action Buttons -->
 <div class="text-center mt-4 no-print">
-    <a href="{{ url_for('create_unit_form') }}" class="btn btn-primary me-2">Create Another Unit Plan</a>
+    <a href="{{ url_for('create_unit_form') }}" class="btn btn-primary me-2">Back to Edit</a>
+    <a href="{{ url_for('create_unit_form') }}" class="btn btn-outline-primary me-2">Create Another Unit Plan</a>
     <a href="{{ url_for('create_lesson_form') }}" class="btn btn-outline-primary me-2">Create Lesson Plan</a>
     <button onclick="window.print()" class="btn btn-outline-primary me-2">Print Plan</button>
     <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#feedbackModal">

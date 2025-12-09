@@ -1,7 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_file
 import base64
 import os
 from datetime import datetime, timedelta
+
+try:
+    import markdown
+    MARKDOWN_AVAILABLE = True
+except ImportError:
+    MARKDOWN_AVAILABLE = False
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
@@ -73,6 +79,9 @@ def create_lesson():
     day_of_unit = request.form.get('day_of_unit')
     lesson_theme = request.form.get('lesson_theme')
     ability_level = request.form.get('ability_level')
+    beginner_percent = request.form.get('beginner_percent')
+    intermediate_percent = request.form.get('intermediate_percent')
+    advance_percent = request.form.get('advance_percent')
     psychomotor_objs = request.form.get('psychomotor_objs')
     cognitive_objs = request.form.get('cognitive_objs')
     affective_objs = request.form.get('affective_objs')
@@ -80,22 +89,44 @@ def create_lesson():
     equipment = request.form.get('equipment')
     safety_concerns = request.form.get('safety_concerns')
     
-    # Lesson section times and details - English
-    intro_time = request.form.get('intro_time')
-    intro_cues = request.form.get('intro_cues')
-    intro_equipment = request.form.get('intro_equipment')
+    # Process multiple activity rows per section
+    def get_activity_rows(section, lang=''):
+        suffix = '_zh' if lang == 'zh' else ''
+        rows = []
+        idx = 1
+        while True:
+            time_key = f'{section}_time_{idx}{suffix}'
+            if time_key not in request.form:
+                break
+            row = {
+                'time': request.form.get(time_key),
+                'content': request.form.get(f'{section}_content_{idx}{suffix}'),
+                'cues': request.form.get(f'{section}_cues_{idx}{suffix}'),
+                'equipment': request.form.get(f'{section}_equipment_{idx}{suffix}'),
+            }
+            # Process file upload for this row
+            file_key = f'{section}_file_{idx}{suffix}'
+            diagram = process_uploaded_file(file_key)
+            if diagram:
+                row['diagram'] = diagram
+            rows.append(row)
+            idx += 1
+        return rows
     
-    sd_time = request.form.get('sd_time')
-    sd_cues = request.form.get('sd_cues')
-    sd_equipment = request.form.get('sd_equipment')
+    # Get activity rows for English
+    intro_activities = get_activity_rows('intro', '')
+    sd_activities = get_activity_rows('sd', '')
+    appli_activities = get_activity_rows('appli', '')
+    ca_activities = get_activity_rows('ca', '')
     
-    appli_time = request.form.get('appli_time')
-    appli_cues = request.form.get('appli_cues')
-    appli_equipment = request.form.get('appli_equipment')
-    
-    ca_time = request.form.get('ca_time')
-    ca_cues = request.form.get('ca_cues')
-    ca_equipment = request.form.get('ca_equipment')
+    # Legacy single-row support (backward compatibility)
+    if not intro_activities:
+        intro_activities = [{
+            'time': request.form.get('intro_time'),
+            'cues': request.form.get('intro_cues'),
+            'equipment': request.form.get('intro_equipment'),
+            'diagram': process_uploaded_file('intro_file')
+        }]
     
     followup_actions = request.form.get('followup_actions')
     self_reflection = request.form.get('self_reflection')
@@ -107,28 +138,24 @@ def create_lesson():
     class_level_zh = request.form.get('class_level_zh')
     topic_zh = request.form.get('topic_zh')
     lesson_theme_zh = request.form.get('lesson_theme_zh')
+    ability_level_zh = request.form.get('ability_level_zh')
+    beginner_percent_zh = request.form.get('beginner_percent_zh')
+    intermediate_percent_zh = request.form.get('intermediate_percent_zh')
+    advance_percent_zh = request.form.get('advance_percent_zh')
     psychomotor_objs_zh = request.form.get('psychomotor_objs_zh')
     cognitive_objs_zh = request.form.get('cognitive_objs_zh')
     affective_objs_zh = request.form.get('affective_objs_zh')
     venue_zh = request.form.get('venue_zh')
     equipment_zh = request.form.get('equipment_zh')
     safety_concerns_zh = request.form.get('safety_concerns_zh')
-    intro_cues_zh = request.form.get('intro_cues_zh')
-    intro_equipment_zh = request.form.get('intro_equipment_zh')
-    sd_cues_zh = request.form.get('sd_cues_zh')
-    sd_equipment_zh = request.form.get('sd_equipment_zh')
-    appli_cues_zh = request.form.get('appli_cues_zh')
-    appli_equipment_zh = request.form.get('appli_equipment_zh')
-    ca_cues_zh = request.form.get('ca_cues_zh')
-    ca_equipment_zh = request.form.get('ca_equipment_zh')
     followup_actions_zh = request.form.get('followup_actions_zh')
     self_reflection_zh = request.form.get('self_reflection_zh')
     
-    # Process uploaded diagram files
-    intro_diagram = process_uploaded_file('intro_file')
-    sd_diagram = process_uploaded_file('sd_file')
-    appli_diagram = process_uploaded_file('appli_file')
-    ca_diagram = process_uploaded_file('ca_file')
+    # Get activity rows for Chinese
+    intro_activities_zh = get_activity_rows('intro', 'zh')
+    sd_activities_zh = get_activity_rows('sd', 'zh')
+    appli_activities_zh = get_activity_rows('appli', 'zh')
+    ca_activities_zh = get_activity_rows('ca', 'zh')
     
     # Create new plan with all fields
     new_plan = {
@@ -152,28 +179,19 @@ def create_lesson():
         'day_of_unit': day_of_unit,
         'lesson_theme': lesson_theme,
         'ability_level': ability_level,
+        'beginner_percent': beginner_percent,
+        'intermediate_percent': intermediate_percent,
+        'advance_percent': advance_percent,
         'psychomotor_objs': psychomotor_objs,
         'cognitive_objs': cognitive_objs,
         'affective_objs': affective_objs,
         'venue': venue,
         'equipment': equipment,
         'safety_concerns': safety_concerns,
-        'intro_time': intro_time,
-        'intro_cues': intro_cues,
-        'intro_equipment': intro_equipment,
-        'intro_diagram': intro_diagram,
-        'sd_time': sd_time,
-        'sd_cues': sd_cues,
-        'sd_equipment': sd_equipment,
-        'sd_diagram': sd_diagram,
-        'appli_time': appli_time,
-        'appli_cues': appli_cues,
-        'appli_equipment': appli_equipment,
-        'appli_diagram': appli_diagram,
-        'ca_time': ca_time,
-        'ca_cues': ca_cues,
-        'ca_equipment': ca_equipment,
-        'ca_diagram': ca_diagram,
+        'intro_activities': intro_activities,
+        'sd_activities': sd_activities,
+        'appli_activities': appli_activities,
+        'ca_activities': ca_activities,
         'followup_actions': followup_actions,
         'self_reflection': self_reflection,
         
@@ -184,20 +202,20 @@ def create_lesson():
         'class_level_zh': class_level_zh,
         'topic_zh': topic_zh,
         'lesson_theme_zh': lesson_theme_zh,
+        'ability_level_zh': ability_level_zh,
+        'beginner_percent_zh': beginner_percent_zh,
+        'intermediate_percent_zh': intermediate_percent_zh,
+        'advance_percent_zh': advance_percent_zh,
         'psychomotor_objs_zh': psychomotor_objs_zh,
         'cognitive_objs_zh': cognitive_objs_zh,
         'affective_objs_zh': affective_objs_zh,
         'venue_zh': venue_zh,
         'equipment_zh': equipment_zh,
         'safety_concerns_zh': safety_concerns_zh,
-        'intro_cues_zh': intro_cues_zh,
-        'intro_equipment_zh': intro_equipment_zh,
-        'sd_cues_zh': sd_cues_zh,
-        'sd_equipment_zh': sd_equipment_zh,
-        'appli_cues_zh': appli_cues_zh,
-        'appli_equipment_zh': appli_equipment_zh,
-        'ca_cues_zh': ca_cues_zh,
-        'ca_equipment_zh': ca_equipment_zh,
+        'intro_activities_zh': intro_activities_zh,
+        'sd_activities_zh': sd_activities_zh,
+        'appli_activities_zh': appli_activities_zh,
+        'ca_activities_zh': ca_activities_zh,
         'followup_actions_zh': followup_actions_zh,
         'self_reflection_zh': self_reflection_zh
     }
@@ -249,19 +267,24 @@ def create_unit():
         # ADD THIS LINE FOR REFERENCES
         'references': request.form.get('references'),
         
-        # Unit contents for 5 days
+        # Unit contents - dynamic days
         'unit_contents': []
     }
     
-    # Add unit contents for each day
-    for day in range(1, 6):
+    # Process dynamic unit days (English)
+    day_num = 1
+    while True:
+        date_key = f'day_{day_num}_date'
+        if date_key not in request.form:
+            break
         day_data = {
-            'day': day,
-            'date': request.form.get(f'day_{day}_date'),
-            'theme': request.form.get(f'day_{day}_theme'),
-            'activities': request.form.get(f'day_{day}_activities')
+            'day': day_num,
+            'date': request.form.get(date_key),
+            'theme': request.form.get(f'day_{day_num}_theme'),
+            'activities': request.form.get(f'day_{day_num}_activities')
         }
         unit_data['unit_contents'].append(day_data)
+        day_num += 1
     
     # Chinese fields
     unit_data.update({
@@ -296,16 +319,21 @@ def create_unit():
         'other_considerations_zh': request.form.get('other_considerations_zh'),
     })
 
-        # Add Chinese unit contents
+    # Add Chinese unit contents - dynamic days
     unit_data['unit_contents_zh'] = []
-    for day in range(1, 6):
+    day_num = 1
+    while True:
+        date_key = f'day_{day_num}_date_zh'
+        if date_key not in request.form:
+            break
         day_data_zh = {
-            'day': day,
-            'date': request.form.get(f'day_{day}_date_zh'),
-            'theme': request.form.get(f'day_{day}_theme_zh'),
-            'activities': request.form.get(f'day_{day}_activities_zh')
+            'day': day_num,
+            'date': request.form.get(date_key),
+            'theme': request.form.get(f'day_{day_num}_theme_zh'),
+            'activities': request.form.get(f'day_{day_num}_activities_zh')
         }
         unit_data['unit_contents_zh'].append(day_data_zh)
+        day_num += 1
     
     unit_plans.append(unit_data)
     return redirect(url_for('view_unit_plan', plan_id=unit_data['id']))
@@ -327,6 +355,24 @@ def view_unit_plan(plan_id):
 @app.route('/diagram-tool')
 def diagram_tool():
     return render_template('diagram_tool.html')
+
+@app.route('/TOS.md')
+def tos():
+    """Serve the Terms of Service document"""
+    tos_path = os.path.join(os.path.dirname(__file__), 'TOS.md')
+    if os.path.exists(tos_path):
+        with open(tos_path, 'r', encoding='utf-8') as f:
+            tos_content = f.read()
+        
+        # Convert markdown to HTML
+        if MARKDOWN_AVAILABLE:
+            html_content = markdown.markdown(tos_content, extensions=['extra', 'nl2br'])
+        else:
+            # Fallback: render as plain text with line breaks
+            html_content = '<pre>' + tos_content + '</pre>'
+        
+        return render_template('tos.html', tos_content=html_content)
+    return "Terms of Service not found", 404
 
 def get_lesson_default_values():
     """Return default values for the form"""

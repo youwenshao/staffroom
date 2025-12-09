@@ -55,6 +55,12 @@
         padding-bottom: 0.5rem;
         margin: 2rem 0 1rem 0;
     }
+    .inline-elements {
+        margin-right: 1rem;
+    }
+    .inline-elements:last-child {
+        margin-right: 0;
+    }
 </style>
 {% endblock %}
 
@@ -77,16 +83,32 @@
     <!-- Basic Information -->
     <p><strong>Lesson Plan ID:</strong> {{ plan.id }}</p>
     <p><strong>Student-teacher's name:</strong> {{ plan.teacher_name }} (PESH Year {{ plan.pesh_year }})</p>
-    <p><strong>Date:</strong> {{ plan.date }} <strong>Time:</strong> {{ plan.class_duration }} mins ({{ plan.start_time }} to {{ plan.end_time }})</p>
+    <p>
+        <strong class="inline-elements">Date:</strong> <span class="inline-elements">{{ plan.date }}</span>
+        <strong class="inline-elements">Time:</strong> <span class="inline-elements">{{ plan.class_duration }} mins ({{ plan.start_time }} to {{ plan.end_time }})</span>
+    </p>
     <p><strong>School Name:</strong> {{ plan.school_name }}</p>
-    <p><strong>Year:</strong> {{ plan.year }} <strong>Class: </strong>{{ plan.class_id }} <strong>Level: </strong>{{ plan.class_level }} <strong>Class Size: </strong>{{ plan.class_size }} (Boys: {{ plan.boys }} Girls: {{ plan.girls }})</p>
-    <p><strong>Unit Topic: </strong>{{ plan.topic }} (Day {{ plan.day_of_unit }} of {{ plan.unit_duration }} days of the Unit)</p>
+    <p>
+        <strong class="inline-elements">Year:</strong> <span class="inline-elements">{{ plan.year }}</span>
+        <strong class="inline-elements">Class:</strong> <span class="inline-elements">{{ plan.class_id }}</span>
+        <strong class="inline-elements">Level:</strong> <span class="inline-elements">{{ plan.class_level }}</span>
+        <strong class="inline-elements">Class Size:</strong> <span class="inline-elements">{{ plan.class_size }}</span>
+        <span class="inline-elements">(Boys: {{ plan.boys }} Girls: {{ plan.girls }})</span>
+    </p>
+    <p><strong>Unit Topic: </strong>{{ plan.topic }} (Day {{ plan.day_of_unit }} of the unit of {{ plan.unit_duration }} days)</p>
     <p><strong>Main Theme of this Lesson:</strong> {{ plan.lesson_theme }}</p>
-    <p><strong>Students' Ability Level:</strong> {{ plan.ability_level }}% proficiency</p>
+    <p><strong>Students' Overall Ability Level:</strong> {{ plan.ability_level }}% proficiency</p>
+    {% if plan.beginner_percent or plan.intermediate_percent or plan.advance_percent %}
+    <p>
+        <strong class="inline-elements">Beginner:</strong> <span class="inline-elements">{{ plan.beginner_percent }}%</span>
+        <strong class="inline-elements">Intermediate:</strong> <span class="inline-elements">{{ plan.intermediate_percent }}%</span>
+        <strong class="inline-elements">Advance:</strong> <span class="inline-elements">{{ plan.advance_percent }}%</span>
+    </p>
+    {% endif %}
     <p></p>
 
     <!-- Objectives Table -->
-    <h4 class="section-title">1.) Lesson Objectives:</h4>
+    <h4 class="section-title">1) Lesson Objectives: Students will be able to:</h4>
     <table class="lesson-table">
         <tbody>
             <tr>
@@ -119,13 +141,13 @@
 
 <!-- LESSON PLANNING TABLE - ENGLISH -->
 <div class="lesson-section">
-    <h4 class="section-title">2.) Lesson Planning:</h4>
+    <h4 class="section-title">2) Lesson Planning:</h4>
     
     <table class="lesson-table">
         <thead>
             <tr>
-                <th style="width: 8%;">Time</th>
-                <th style="width: 25%;">Teaching Content/Activity</th>
+                <th style="width: 8%;">Time (mins)</th>
+                <th style="width: 25%;">Teaching content/ Activity</th>
                 <th style="width: 23%;">Teaching Cues/Objectives</th>
                 <th style="width: 25%;">Class Organization/Management/Teacher's Positions</th>
                 <th style="width: 19%;">Equipment</th>
@@ -133,8 +155,25 @@
         </thead>
         <tbody>
             <!-- Introductory Activities -->
+            {% if plan.intro_activities %}
+                {% for activity in plan.intro_activities %}
+                <tr>
+                    <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
+                    <td><strong>{% if loop.first %}Introductory Activities{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td style="text-align: center;">{{ activity.cues }}</td>
+                    <td style="text-align: center;">
+                        {% if activity.diagram %}
+                            <img src="{{ activity.diagram }}" style="max-width:100%; max-height:100px;" alt="Diagram">
+                        {% else %}
+                            <em>(No diagram uploaded)</em>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">{{ activity.equipment }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
             <tr>
-                <td style="text-align: center;"><strong>{{ plan.intro_time }}</strong> mins</td>
+                <td style="text-align: center;"><strong>{{ plan.intro_time }}</strong></td>
                 <td><strong>Introductory Activities</strong></td>
                 <td style="text-align: center;">{{ plan.intro_cues }}</td>
                 <td style="text-align: center;">
@@ -146,10 +185,28 @@
                 </td>
                 <td style="text-align: center;">{{ plan.intro_equipment }}</td>
             </tr>
+            {% endif %}
             
             <!-- Skill Development -->
+            {% if plan.sd_activities %}
+                {% for activity in plan.sd_activities %}
+                <tr>
+                    <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
+                    <td><strong>{% if loop.first %}Skill Development{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td style="text-align: center;">{{ activity.cues }}</td>
+                    <td style="text-align: center;">
+                        {% if activity.diagram %}
+                            <img src="{{ activity.diagram }}" style="max-width:100%; max-height:100px;" alt="Diagram">
+                        {% else %}
+                            <em>(No diagram uploaded)</em>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">{{ activity.equipment }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
             <tr>
-                <td style="text-align: center;"><strong>{{ plan.sd_time }}</strong> mins</td>
+                <td style="text-align: center;"><strong>{{ plan.sd_time }}</strong></td>
                 <td><strong>Skill Development</strong></td>
                 <td style="text-align: center;">{{ plan.sd_cues }}</td>
                 <td style="text-align: center;">
@@ -161,10 +218,28 @@
                 </td>
                 <td style="text-align: center;">{{ plan.sd_equipment }}</td>
             </tr>
+            {% endif %}
             
             <!-- Application -->
+            {% if plan.appli_activities %}
+                {% for activity in plan.appli_activities %}
+                <tr>
+                    <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
+                    <td><strong>{% if loop.first %}Application{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td style="text-align: center;">{{ activity.cues }}</td>
+                    <td style="text-align: center;">
+                        {% if activity.diagram %}
+                            <img src="{{ activity.diagram }}" style="max-width:100%; max-height:100px;" alt="Diagram">
+                        {% else %}
+                            <em>(No diagram uploaded)</em>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">{{ activity.equipment }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
             <tr>
-                <td style="text-align: center;"><strong>{{ plan.appli_time }}</strong> mins</td>
+                <td style="text-align: center;"><strong>{{ plan.appli_time }}</strong></td>
                 <td><strong>Application</strong></td>
                 <td style="text-align: center;">{{ plan.appli_cues }}</td>
                 <td style="text-align: center;">
@@ -176,10 +251,28 @@
                 </td>
                 <td style="text-align: center;">{{ plan.appli_equipment }}</td>
             </tr>
+            {% endif %}
             
             <!-- Concluding Activities -->
+            {% if plan.ca_activities %}
+                {% for activity in plan.ca_activities %}
+                <tr>
+                    <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
+                    <td><strong>{% if loop.first %}Concluding Activities{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td style="text-align: center;">{{ activity.cues }}</td>
+                    <td style="text-align: center;">
+                        {% if activity.diagram %}
+                            <img src="{{ activity.diagram }}" style="max-width:100%; max-height:100px;" alt="Diagram">
+                        {% else %}
+                            <em>(No diagram uploaded)</em>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">{{ activity.equipment }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
             <tr>
-                <td style="text-align: center;"><strong>{{ plan.ca_time }}</strong> mins</td>
+                <td style="text-align: center;"><strong>{{ plan.ca_time }}</strong></td>
                 <td><strong>Concluding Activities</strong></td>
                 <td style="text-align: center;">{{ plan.ca_cues }}</td>
                 <td style="text-align: center;">
@@ -191,14 +284,15 @@
                 </td>
                 <td style="text-align: center;">{{ plan.ca_equipment }}</td>
             </tr>
+            {% endif %}
         </tbody>
     </table>
 
     <!-- Follow-up and Reflection -->
-    <h4 class="section-title">3.) Follow-up Actions:</h4>
+    <h4 class="section-title">3) After Lesson:</h4>
     <p>{{ plan.followup_actions }}</p>
 
-    <h4 class="section-title">4.) Self-reflection:</h4>
+    <h4 class="section-title">4) Self-reflection:</h4>
     <p>{{ plan.self_reflection }}</p>
 </div>
 
@@ -212,19 +306,32 @@
     
     <!-- Chinese Header Information -->
     <p><strong>實習教師姓名:</strong> {{ plan.teacher_name_zh }} (PESH Year {{ plan.pesh_year }})</p>
-    <p><strong>日期:</strong> {{ plan.date }} <strong>上課時間:</strong> {{ plan.class_duration }}分鐘 ({{ plan.start_time }} 至 {{ plan.end_time }})</p>
-    <p><strong>學校名稱:</strong> {{ plan.school_name_zh }}</p>
-    <p><strong>班級:</strong> {{ plan.year }} <strong>班別: </strong>{{ plan.class_id_zh }} <strong>級別: </strong>
-        {% if plan.class_level_zh == 'Primary' %}小學{% else %}中學{% endif %} 
-        <strong>學生人數: </strong>{{ plan.class_size }} (男生: {{ plan.boys }} 女生: {{ plan.girls }} )
+    <p>
+        <strong class="inline-elements">日期:</strong> <span class="inline-elements">{{ plan.date }}</span>
+        <strong class="inline-elements">上課時間:</strong> <span class="inline-elements">{{ plan.class_duration }}分鐘 ({{ plan.start_time }} 至 {{ plan.end_time }})</span>
     </p>
-    <p><strong>單元主題: </strong>{{ plan.topic_zh }} (本單元第 {{ plan.day_of_unit }}/{{ plan.unit_duration }} 課時)</p>
+    <p><strong>學校名稱:</strong> {{ plan.school_name_zh }}</p>
+    <p>
+        <strong class="inline-elements">班級:</strong> <span class="inline-elements">{{ plan.year }}</span>
+        <strong class="inline-elements">班別:</strong> <span class="inline-elements">{{ plan.class_id_zh }}</span>
+        <strong class="inline-elements">類別:</strong> <span class="inline-elements">{{ plan.class_level_zh }}</span>
+        <strong class="inline-elements">學生人數:</strong> <span class="inline-elements">{{ plan.class_size }}</span>
+        <span class="inline-elements">(男生: {{ plan.boys }} 女生: {{ plan.girls }})</span>
+    </p>
+    <p><strong>單元主題: </strong>{{ plan.topic_zh }} (第 {{ plan.day_of_unit }} 課時 of the unit of {{ plan.unit_duration }} 天)</p>
     <p><strong>本教節的教學主題:</strong> {{ plan.lesson_theme_zh }}</p>
-    <p><strong>學生能力:</strong> {{ plan.ability_level }}% 熟練度</p>
+    <p><strong>學生整體能力水平:</strong> {{ plan.ability_level_zh or plan.ability_level }}% 熟練度</p>
+    {% if plan.beginner_percent_zh or plan.intermediate_percent_zh or plan.advance_percent_zh %}
+    <p>
+        <strong class="inline-elements">初學者:</strong> <span class="inline-elements">{{ plan.beginner_percent_zh }}%</span>
+        <strong class="inline-elements">中級:</strong> <span class="inline-elements">{{ plan.intermediate_percent_zh }}%</span>
+        <strong class="inline-elements">高級:</strong> <span class="inline-elements">{{ plan.advance_percent_zh }}%</span>
+    </p>
+    {% endif %}
     <p></p>
 
     <!-- Chinese Objectives Table -->
-    <h4 class="section-title">1.) 教學目標:</h4>
+    <h4 class="section-title">1) 教學目標：學生將能</h4>
     <table class="lesson-table">
         <tbody>
             <tr>
@@ -257,12 +364,12 @@
 
 <!-- CHINESE LESSON PLANNING TABLE -->
 <div class="lesson-section chinese-section">
-    <h4 class="section-title">2.) 教案規劃:</h4>
+    <h4 class="section-title">2) 教案規劃：</h4>
     
     <table class="lesson-table">
         <thead>
             <tr>
-                <th style="width: 8%;">時間</th>
+                <th style="width: 8%;">時間（分鐘）</th>
                 <th style="width: 25%;">教學內容/活動</th>
                 <th style="width: 23%;">教學要點/目標</th>
                 <th style="width: 25%;">課堂組織/管理/教師位置</th>
@@ -271,8 +378,25 @@
         </thead>
         <tbody>
             <!-- 引入活動 -->
+            {% if plan.intro_activities_zh %}
+                {% for activity in plan.intro_activities_zh %}
+                <tr>
+                    <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
+                    <td><strong>{% if loop.first %}引入活動{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td style="text-align: center;">{{ activity.cues }}</td>
+                    <td style="text-align: center;">
+                        {% if activity.diagram %}
+                            <img src="{{ activity.diagram }}" style="max-width:100%; max-height:100px;" alt="圖表">
+                        {% else %}
+                            <em>(沒有上傳圖表)</em>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">{{ activity.equipment }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
             <tr>
-                <td style="text-align: center;"><strong>{{ plan.intro_time }}</strong> 分鐘</td>
+                <td style="text-align: center;"><strong>{{ plan.intro_time }}</strong></td>
                 <td><strong>引入活動</strong></td>
                 <td style="text-align: center;">{{ plan.intro_cues_zh }}</td>
                 <td style="text-align: center;">
@@ -284,10 +408,28 @@
                 </td>
                 <td style="text-align: center;">{{ plan.intro_equipment_zh }}</td>
             </tr>
+            {% endif %}
             
             <!-- 技能發展 -->
+            {% if plan.sd_activities_zh %}
+                {% for activity in plan.sd_activities_zh %}
+                <tr>
+                    <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
+                    <td><strong>{% if loop.first %}技能發展{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td style="text-align: center;">{{ activity.cues }}</td>
+                    <td style="text-align: center;">
+                        {% if activity.diagram %}
+                            <img src="{{ activity.diagram }}" style="max-width:100%; max-height:100px;" alt="圖表">
+                        {% else %}
+                            <em>(沒有上傳圖表)</em>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">{{ activity.equipment }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
             <tr>
-                <td style="text-align: center;"><strong>{{ plan.sd_time }}</strong> 分鐘</td>
+                <td style="text-align: center;"><strong>{{ plan.sd_time }}</strong></td>
                 <td><strong>技能發展</strong></td>
                 <td style="text-align: center;">{{ plan.sd_cues_zh }}</td>
                 <td style="text-align: center;">
@@ -299,10 +441,28 @@
                 </td>
                 <td style="text-align: center;">{{ plan.sd_equipment_zh }}</td>
             </tr>
+            {% endif %}
             
             <!-- 鞏固/應用活動 -->
+            {% if plan.appli_activities_zh %}
+                {% for activity in plan.appli_activities_zh %}
+                <tr>
+                    <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
+                    <td><strong>{% if loop.first %}鞏固/應用活動{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td style="text-align: center;">{{ activity.cues }}</td>
+                    <td style="text-align: center;">
+                        {% if activity.diagram %}
+                            <img src="{{ activity.diagram }}" style="max-width:100%; max-height:100px;" alt="圖表">
+                        {% else %}
+                            <em>(沒有上傳圖表)</em>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">{{ activity.equipment }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
             <tr>
-                <td style="text-align: center;"><strong>{{ plan.appli_time }}</strong> 分鐘</td>
+                <td style="text-align: center;"><strong>{{ plan.appli_time }}</strong></td>
                 <td><strong>鞏固/應用活動</strong></td>
                 <td style="text-align: center;">{{ plan.appli_cues_zh }}</td>
                 <td style="text-align: center;">
@@ -314,10 +474,28 @@
                 </td>
                 <td style="text-align: center;">{{ plan.appli_equipment_zh }}</td>
             </tr>
+            {% endif %}
             
             <!-- 整理活動 -->
+            {% if plan.ca_activities_zh %}
+                {% for activity in plan.ca_activities_zh %}
+                <tr>
+                    <td style="text-align: center;"><strong>{{ activity.time }}</strong></td>
+                    <td><strong>{% if loop.first %}整理活動{% endif %}</strong>{{ activity.content or '' }}</td>
+                    <td style="text-align: center;">{{ activity.cues }}</td>
+                    <td style="text-align: center;">
+                        {% if activity.diagram %}
+                            <img src="{{ activity.diagram }}" style="max-width:100%; max-height:100px;" alt="圖表">
+                        {% else %}
+                            <em>(沒有上傳圖表)</em>
+                        {% endif %}
+                    </td>
+                    <td style="text-align: center;">{{ activity.equipment }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
             <tr>
-                <td style="text-align: center;"><strong>{{ plan.ca_time }}</strong> 分鐘</td>
+                <td style="text-align: center;"><strong>{{ plan.ca_time }}</strong></td>
                 <td><strong>整理活動</strong></td>
                 <td style="text-align: center;">{{ plan.ca_cues_zh }}</td>
                 <td style="text-align: center;">
@@ -329,21 +507,23 @@
                 </td>
                 <td style="text-align: center;">{{ plan.ca_equipment_zh }}</td>
             </tr>
+            {% endif %}
         </tbody>
     </table>
 
     <!-- Chinese Follow-up and Reflection -->
-    <h4 class="section-title">3.) 跟進事項:</h4>
+    <h4 class="section-title">3) 課堂完結後：</h4>
     <p>{{ plan.followup_actions_zh }}</p>
 
-    <h4 class="section-title">4.) 自我反思:</h4>
+    <h4 class="section-title">4) 自我反思:</h4>
     <p>{{ plan.self_reflection_zh }}</p>
 </div>
 
 <!-- Action Buttons -->
 <div class="text-center mt-4 no-print">
-    <a href="{{ url_for('create_lesson_form') }}" class="btn btn-primary me-2">Create Another Lesson Plan</a>
-    <a href="{{ url_for('create_unit_form') }}" class="btn btn-primary me-2">Create Unit Plan</a>
+    <a href="{{ url_for('create_lesson_form') }}" class="btn btn-primary me-2">Back to Edit</a>
+    <a href="{{ url_for('create_lesson_form') }}" class="btn btn-outline-primary me-2">Create Another Lesson Plan</a>
+    <a href="{{ url_for('create_unit_form') }}" class="btn btn-outline-primary me-2">Create Unit Plan</a>
     <button onclick="window.print()" class="btn btn-outline-primary me-2">Print Plan</button>
     <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#feedbackModal">
         Feedback
