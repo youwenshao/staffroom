@@ -318,12 +318,13 @@ The application is currently deployed on **Vercel**:
 
 ### Data Storage
 
-⚠️ **IMPORTANT**: Plans created in this application are **NOT permanently saved**. They exist only in server memory and will be lost when:
-- The server restarts
-- The deployment is updated
-- The session expires
+### Persistence & roles
 
-**Recommendation for Users**: Always print or save your plans as PDFs immediately after creation if you need to keep them.
+- Plans and users are stored in Supabase Postgres. Guests can browse but cannot save or retrieve records.
+- Diagram files upload to S3-compatible storage (Supabase storage recommended) and only the public URL is stored in Postgres.
+- Student-teachers can share plans with selected professors; professors can see their own plans and any shared student plans; admins can see everything.
+
+**Recommendation for Users**: Download or print plans regularly; storage is best-effort and depends on configured database/bucket availability.
 
 ### Browser Compatibility
 
@@ -348,6 +349,61 @@ The application is currently deployed on **Vercel**:
 
 ---
 
+## Database, auth, and storage setup
+
+Configure environment variables (Vercel/locally):
+
+- `SECRET_KEY`
+- `DATABASE_URL` (Supabase Postgres URL with `sslmode=require`)
+- `STORAGE_BUCKET`, `STORAGE_REGION`, `STORAGE_ENDPOINT`, `STORAGE_PUBLIC_BASE` (optional if endpoint already exposes the bucket), `STORAGE_ACCESS_KEY`, `STORAGE_SECRET_KEY`
+
+### Required schema (run once)
+
+```sql
+create table users (
+  id bigserial primary key,
+  username text unique not null,
+  password_hash text not null,
+  role text not null check (role in ('student-teacher','professor','admin')),
+  created_at timestamptz default now()
+);
+
+create table professor_student (
+  professor_id bigint references users(id) on delete cascade,
+  student_id bigint references users(id) on delete cascade,
+  primary key (professor_id, student_id)
+);
+
+create table lesson_plans (
+  id bigserial primary key,
+  owner_id bigint references users(id) on delete cascade,
+  plan_data jsonb not null,
+  shared_professors bigint[] default '{}',
+  created_at timestamptz default now()
+);
+create index lesson_owner_idx on lesson_plans(owner_id);
+create index lesson_shared_idx on lesson_plans using gin (shared_professors);
+
+create table unit_plans (
+  id bigserial primary key,
+  owner_id bigint references users(id) on delete cascade,
+  plan_data jsonb not null,
+  shared_professors bigint[] default '{}',
+  created_at timestamptz default now()
+);
+create index unit_owner_idx on unit_plans(owner_id);
+create index unit_shared_idx on unit_plans using gin (shared_professors);
+```
+
+### Role behavior
+
+- `student-teacher`: create/view own plans; pick professors to share; saved to Postgres.
+- `professor`: create/view own plans + any student-teacher who shared with them or is mapped in `professor_student`.
+- `admin`: full visibility.
+- `guest`: browsing only; no saving/retrieval.
+
+---
+
 ## Support and Feedback
 
 ### For Users (SSPE Students)
@@ -360,17 +416,15 @@ If you encounter issues or have questions:
 ### For IT Staff
 
 **Code Review Information**:
-- All templates use Jinja2 syntax for dynamic content
-- Form submissions are handled via POST requests
-- Client-side JavaScript handles dynamic form features (adding rows, file previews, etc.)
-- No external APIs or databases are used
-- All styling is contained in template files or Bootstrap CSS
+- Templates use Jinja2 syntax for dynamic content.
+- Form submissions are handled via POST requests; plan payloads are stored as JSONB in Postgres.
+- Client-side JavaScript handles dynamic form features (adding rows, file previews, etc.).
+- Storage for diagrams is via S3-compatible buckets; URLs are persisted in Postgres.
 
 **Code Quality Notes**:
-- Inline styles and scripts are used in templates for simplicity
-- No minification or build process required
-- Pure Python/Flask backend with no ORM or database layer
-- Frontend uses vanilla JavaScript (no frameworks)
+- Inline styles and scripts are used in templates for simplicity.
+- No build step required; pure Python/Flask backend with psycopg2/bcrypt/boto3.
+- Frontend uses vanilla JavaScript (no frameworks).
 
 ### Terms of Service
 
