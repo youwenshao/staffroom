@@ -117,6 +117,24 @@
             </div>
         </div>
         
+        <!-- Sharing -->
+        <div class="alert alert-light border d-flex align-items-start gap-3">
+            <div>
+                <div class="fw-bold mb-1">Share with professors</div>
+                <p class="mb-2 small text-muted">Choose professors who can view this unit plan for review.</p>
+                <select class="form-select" name="shared_professors" multiple {% if not current_user or current_user.is_guest %}disabled{% endif %}>
+                    {% for prof in professors %}
+                    <option value="{{ prof.id }}">{{ prof.username }}</option>
+                    {% endfor %}
+                </select>
+                {% if not current_user or current_user.is_guest %}
+                <div class="form-text text-warning">Log in to enable sharing and saving.</div>
+                {% else %}
+                <div class="form-text">Hold Ctrl/Cmd to select multiple professors.</div>
+                {% endif %}
+            </div>
+        </div>
+        
         <!-- ENGLISH UNIT PLAN SECTION -->
         <div class="form-section form-language-section active" id="english-section">
             <h4 class="form-section-title">English Version</h4>

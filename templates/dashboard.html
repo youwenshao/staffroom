@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-3">Your workspace</h2>
+        <p class="text-muted mb-0">Access the plans you can view based on your role and sharing settings.</p>
+    </div>
+</div>
+
+{% if current_user and current_user.is_guest %}
+<div class="alert alert-warning">
+    You are browsing as a guest. Saving and retrieving plans is disabled. Please <a href="{{ url_for('login') }}">log in</a> to create or view saved records.
+    </div>
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Lesson plans</h5>
+                    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('create_lesson_form') }}">New</a>
+                </div>
+                {% if lesson_plans %}
+                <ul class="list-group list-group-flush">
+                    {% for plan in lesson_plans %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-bold">{{ plan.title }}</div>
+                                <div class="text-muted small">Owner: {{ plan.owner_username }} • {{ plan.created_at }}</div>
+                            </div>
+                            <a class="btn btn-link" href="{{ url_for('view_lesson_plan', plan_id=plan.id) }}">Open</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted mb-0">No lesson plans available yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Unit plans</h5>
+                    <a class="btn btn-sm btn-outline-primary" href="{{ url_for('create_unit_form') }}">New</a>
+                </div>
+                {% if unit_plans %}
+                <ul class="list-group list-group-flush">
+                    {% for plan in unit_plans %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-bold">{{ plan.title }}</div>
+                                <div class="text-muted small">Owner: {{ plan.owner_username }} • {{ plan.created_at }}</div>
+                            </div>
+                            <a class="btn btn-link" href="{{ url_for('view_unit_plan', plan_id=plan.id) }}">Open</a>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted mb-0">No unit plans available yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<style>
+    .auth-hero {
+        position: relative;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #fff;
+        overflow: hidden;
+    }
+    .auth-shape {
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.25;
+        z-index: 1;
+    }
+    .auth-shape.primary {
+        width: 320px;
+        height: 320px;
+        background: var(--primary);
+        top: -120px;
+        left: -120px;
+    }
+    .auth-shape.accent {
+        width: 220px;
+        height: 220px;
+        background: var(--accent);
+        bottom: -80px;
+        right: -80px;
+    }
+    .auth-card {
+        position: relative;
+        z-index: 2;
+        max-width: 960px;
+        width: 100%;
+        background: #fff;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+        border-radius: 24px;
+        padding: 2.5rem;
+    }
+    .auth-header h1 {
+        font-weight: 800;
+        color: var(--primary);
+    }
+    .role-pill {
+        border: 1px solid var(--primary);
+        color: var(--primary);
+        border-radius: 999px;
+        padding: 0.4rem 0.9rem;
+        font-size: 0.9rem;
+    }
+    .auth-form .form-label {
+        font-weight: 600;
+        color: #333;
+    }
+    .guest-card {
+        border: 1px dashed rgba(0,0,0,0.1);
+        background: #fafafa;
+        border-radius: 18px;
+        padding: 1rem 1.25rem;
+    }
+    .switch-link {
+        cursor: pointer;
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-hero">
+    <div class="auth-shape primary"></div>
+    <div class="auth-shape accent"></div>
+    <div class="container">
+        <div class="auth-card">
+            <div class="row g-4 align-items-start">
+                <div class="col-lg-5">
+                    <div class="auth-header mb-4">
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="role-pill me-2">student-teacher</span>
+                            <span class="role-pill me-2">professor</span>
+                            <span class="role-pill">admin</span>
+                        </div>
+                        <h1 class="display-5 mb-3">Welcome to staffroom</h1>
+                        <p class="lead text-muted mb-4">Sign in to create, review, and share unit and lesson plans. Continue as guest to preview without saving.</p>
+                        {% if message %}
+                        <div class="alert alert-warning py-2 px-3">
+                            {{ message }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="guest-card mb-3">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <strong>Just browsing?</strong>
+                                <p class="mb-1 small text-muted">Continue as guest to try the tools. Saving and retrieval are disabled.</p>
+                            </div>
+                            <form method="POST" action="{{ url_for('continue_as_guest') }}">
+                                <button class="btn btn-outline-primary btn-sm">Continue as guest</button>
+                            </form>
+                        </div>
+                    </div>
+                    <p class="small text-muted mb-0">Need a role? Create an account as a student-teacher or professor. Admin roles are typically granted by system maintainers.</p>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4 auth-form">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0" id="form-title">Log in</h5>
+                                <span class="switch-link" id="switch-link">Need to create an account?</span>
+                            </div>
+                            <form method="POST" action="{{ url_for('login') }}" id="auth-form">
+                                <input type="hidden" name="mode" id="mode" value="login">
+                                <div class="mb-3">
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" name="username" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Password</label>
+                                    <input type="password" class="form-control" name="password" required>
+                                </div>
+                                <div class="mb-3" id="role-select" style="display: none;">
+                                    <label class="form-label">Role</label>
+                                    <select class="form-select" name="role">
+                                        <option value="student-teacher">Student-Teacher</option>
+                                        <option value="professor">Professor</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                    <div class="form-text">Admins should be provisioned only if authorized.</div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <button class="btn btn-primary px-4" type="submit">Continue</button>
+                                    {% if next_url %}
+                                    <input type="hidden" name="next" value="{{ next_url }}">
+                                    {% endif %}
+                                    <a href="{{ url_for('index') }}" class="text-muted">Back home</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const switchLink = document.getElementById('switch-link');
+    const modeInput = document.getElementById('mode');
+    const formTitle = document.getElementById('form-title');
+    const roleSelect = document.getElementById('role-select');
+
+    switchLink.addEventListener('click', () => {
+        const isLogin = modeInput.value === 'login';
+        modeInput.value = isLogin ? 'signup' : 'login';
+        formTitle.textContent = isLogin ? 'Create account' : 'Log in';
+        switchLink.textContent = isLogin ? 'Already have an account?' : 'Need to create an account?';
+        roleSelect.style.display = isLogin ? 'block' : 'none';
+    });
+</script>
+{% endblock %}
+
