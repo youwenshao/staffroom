@@ -33,6 +33,13 @@
         color: #69256B;
         border-bottom: 2px solid #69256B;
     }
+    .references-section {
+        border-left: 4px solid #6c757d;
+    }
+    .references-section .form-section-title {
+        color: #6c757d;
+        border-bottom: 2px solid #6c757d;
+    }
     .optional-field {
         font-style: italic;
         color: #6c757d;
@@ -55,6 +62,39 @@
     }
     .form-language-section.active {
         display: block;
+    }
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 1rem;
+        }
+        .form-section {
+            padding: 1rem;
+        }
+        .table-section {
+            padding: 0.75rem;
+        }
+        .day-section {
+            padding: 0.75rem !important;
+        }
+        .form-control, .form-select, textarea {
+            font-size: 0.9rem;
+        }
+    }
+    @media (max-width: 576px) {
+        .form-container {
+            padding: 0.75rem;
+            border-radius: 5px;
+        }
+        .form-section {
+            padding: 0.75rem;
+        }
+        .row > [class*="col-"] {
+            margin-bottom: 0.5rem;
+        }
+        .day-section .row > [class*="col-"] {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
     }
 </style>
 {% endblock %}
@@ -461,24 +501,19 @@
         </div>
 
         <!-- REFERENCES SECTION -->
-        <div class="form-section">
-            <h4 class="form-section-title">References / 參考資料</h4>
-            
+        <div class="form-section references-section">
             <!-- English References -->
-            <div class="mb-4">
-                <label class="form-label">References (English)</label>
+            <div class="mb-4 form-language-section active" id="english-refs-section">
+                <h4 class="form-section-title">References</h4>
+                <label class="form-label">References</label>
                 <textarea class="form-control" name="references" rows="3" placeholder="List your references, textbooks, websites, or other resources used in planning this unit"></textarea>
-                <div class="form-text">These references will be displayed in both English and Chinese versions of your unit plan.</div>
             </div>
 
-            <!-- Chinese References Note -->
-            <div class="mb-4">
-                <label class="form-label">參考資料 (中文)</label>
-                <div class="alert alert-info">
-                    <small>Note: The same references will be used for both English and Chinese versions. Please include any Chinese resources in the field above.</small>
-                    <br>
-                    <small>注意：相同的參考資料將用於英文和中文版本。請在上方欄位中包含中文資源。</small>
-                </div>
+            <!-- Chinese References -->
+            <div class="mb-4 form-language-section" id="chinese-refs-section">
+                <h4 class="form-section-title">參考資料</h4>
+                <label class="form-label">參考資料</label>
+                <textarea class="form-control" name="references_zh" rows="3" placeholder="列出您在規劃此單元時使用的參考資料、教科書、網站或其他資源"></textarea>
             </div>
         </div>
 
@@ -496,15 +531,49 @@
         const englishSection = document.getElementById('english-section');
         const chineseSection = document.getElementById('chinese-section');
         
+        const markInitialRequired = (section) => {
+            section.querySelectorAll('input, select, textarea').forEach(field => {
+                if (field.required) {
+                    field.dataset.wasRequired = 'true';
+                }
+            });
+        };
+        
+        const toggleSection = (section, enable) => {
+            section.querySelectorAll('input, select, textarea').forEach(field => {
+                if (enable) {
+                    if (field.dataset.wasRequired === 'true') {
+                        field.required = true;
+                    }
+                } else {
+                    if (field.required) {
+                        field.dataset.wasRequired = 'true';
+                    }
+                    field.required = false;
+                }
+            });
+        };
+        
+        const englishRefsSection = document.getElementById('english-refs-section');
+        const chineseRefsSection = document.getElementById('chinese-refs-section');
+        
+        const setLanguage = (lang) => {
+            const englishActive = lang === 'english';
+            englishSection.classList.toggle('active', englishActive);
+            chineseSection.classList.toggle('active', !englishActive);
+            if (englishRefsSection) englishRefsSection.classList.toggle('active', englishActive);
+            if (chineseRefsSection) chineseRefsSection.classList.toggle('active', !englishActive);
+            toggleSection(englishSection, englishActive);
+            toggleSection(chineseSection, !englishActive);
+        };
+        
+        markInitialRequired(englishSection);
+        markInitialRequired(chineseSection);
+        setLanguage('english');
+        
         langRadios.forEach(radio => {
             radio.addEventListener('change', function() {
-                if (this.value === 'english') {
-                    englishSection.classList.add('active');
-                    chineseSection.classList.remove('active');
-                } else {
-                    englishSection.classList.remove('active');
-                    chineseSection.classList.add('active');
-                }
+                setLanguage(this.value);
             });
         });
         
@@ -548,6 +617,10 @@
             `;
             
             container.appendChild(dayRow);
+            dayRow.querySelectorAll('input, textarea').forEach(field => {
+                field.dataset.wasRequired = 'true';
+                field.required = true;
+            });
             
             // Add remove functionality
             dayRow.querySelector('.remove-day-btn').addEventListener('click', function() {
@@ -565,6 +638,15 @@
         addDayBtnZh.addEventListener('click', function() {
             addDayRow('zh');
         });
+
+        // Pre-populate 5 days for both languages
+        for (let i = 0; i < 5; i++) {
+            addDayRow('en');
+            addDayRow('zh');
+        }
+
+        // Ensure required flags reflect the currently selected language after prepopulation
+        setLanguage(document.querySelector('input[name="template_language"]:checked')?.value || 'english');
     });
 </script>
 {% endblock %}

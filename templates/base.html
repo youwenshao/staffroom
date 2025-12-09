@@ -23,7 +23,44 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 80px;
+            padding: 2rem 1.5rem !important;
+            margin-top: auto;
+        }
+        /* Custom hamburger icon with straight edges */
+        .custom-hamburger {
+            width: 24px;
+            height: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .custom-hamburger span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: white;
+            border-radius: 0;
+            transition: all 0.3s ease;
+            transform-origin: center;
+        }
+        .navbar-toggler {
+            border: none;
+            padding: 0.25rem 0.5rem;
+        }
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+        /* Transform to X when navbar is expanded */
+        .navbar-toggler[aria-expanded="true"] .custom-hamburger span:nth-child(1) {
+            transform: translateY(8.5px) rotate(45deg);
+        }
+        .navbar-toggler[aria-expanded="true"] .custom-hamburger span:nth-child(2) {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+        .navbar-toggler[aria-expanded="true"] .custom-hamburger span:nth-child(3) {
+            transform: translateY(-8.5px) rotate(-45deg);
         }
     </style>
     {% block styles %}{% endblock %}
@@ -33,8 +70,12 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('index') }}">staffroom</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <div class="custom-hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto">
@@ -44,8 +85,8 @@
                             Create Plan
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{{ url_for('create_lesson_form') }}">Lesson Plan</a></li>
                             <li><a class="dropdown-item" href="{{ url_for('create_unit_form') }}">Unit Plan</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('create_lesson_form') }}">Lesson Plan</a></li>
                         </ul>
                     </div>
                     <a class="nav-link feedback-link" href="#" data-bs-toggle="modal" data-bs-target="#feedbackModal">
@@ -62,11 +103,11 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-light text-center p-4">
-        <div>
-            <p class="mb-1">CUHK Department of Sports Science and Physical Education © 2025</p>
-            <p class="mb-1">CUHK Faculty of Education</p>
-            <p class="mb-0 small text-muted">
+    <footer class="bg-light text-center">
+        <div style="padding: 0.75rem 0;">
+            <p class="mb-2" style="font-size: 0.95rem;">CUHK Department of Sports Science and Physical Education © 2025</p>
+            <p class="mb-2" style="font-size: 0.95rem;">CUHK Faculty of Education</p>
+            <p class="mb-0 small text-muted" style="font-size: 0.85rem;">
                 By using this website, you agree to our 
                 <a href="/TOS.md" target="_blank" class="text-decoration-none">Terms of Service</a>, 
                 which includes the storage and analysis of your data.

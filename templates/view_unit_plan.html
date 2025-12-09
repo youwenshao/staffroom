@@ -58,14 +58,52 @@
     }
     .inline-elements {
         margin-right: 1rem;
+        display: inline-block;
     }
     .inline-elements:last-child {
         margin-right: 0;
+    }
+    @media (max-width: 768px) {
+        .unit-table th,
+        .unit-table td {
+            padding: 6px;
+            font-size: 0.9rem;
+        }
+        .inline-elements {
+            margin-right: 0.5rem;
+        }
+        .section-title {
+            font-size: 1.1rem;
+        }
+    }
+    @media (max-width: 576px) {
+        .unit-table {
+            font-size: 0.85rem;
+        }
+        .unit-table th,
+        .unit-table td {
+            padding: 6px 4px;
+        }
+        .inline-elements {
+            display: block;
+            margin-right: 0;
+            margin-bottom: 0.25rem;
+        }
+        .section-title {
+            font-size: 1rem;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+        .unit-section {
+            margin-bottom: 1.5rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
+{% set lang = plan.template_language %}
+{% set show_en = (not lang) or lang == 'english' %}
+{% set show_zh = (not lang) or lang == 'chinese' %}
 <!-- Success Message with Feedback Prompt -->
 <div class="success-message no-print">
     <h5>Unit plan created successfully!</h5>
@@ -75,6 +113,7 @@
     </p>
 </div>
 
+{% if show_en %}
 <!-- ENGLISH UNIT PLAN -->
 <div class="unit-section">
     <h1 style="margin-top:0pt; margin-bottom:0pt; text-align:center; line-height:18pt;">
@@ -91,7 +130,8 @@
        <strong class="inline-elements">Level:</strong> <span class="inline-elements">{{ plan.class_level }}</span>
        <strong class="inline-elements">Class Size:</strong> <span class="inline-elements">{{ plan.class_size }}</span>
        {% if plan.boys or plan.girls %}
-       <span class="inline-elements">(Boys: {{ plan.boys }} Girls: {{ plan.girls }})</span>
+       <span class="inline-elements"><strong>Boys:</strong> {{ plan.boys or plan.boys_zh }}</span>
+       <span class="inline-elements"><strong>Girls:</strong> {{ plan.girls or plan.girls_zh }}</span>
        {% endif %}
     </p>
     <p><strong>Teaching Venue/Facilities:</strong> {{ plan.venue }}</p>
@@ -121,7 +161,7 @@
                 <td>{{ plan.learning_outcomes }}</td>
             </tr>
             <tr>
-                <td><strong>Assessments:</strong></td>
+                <td><strong>Assessments (if any):</strong></td>
                 <td>{{ plan.assessments }}</td>
             </tr>
         </tbody>
@@ -235,9 +275,13 @@
     <p>{{ plan.references or 'No references provided.' }}</p>
 </div>
 
+{% if show_zh %}
 <div class="page-break"></div>
+{% endif %}
+{% endif %}
 
 <!-- CHINESE UNIT PLAN -->
+{% if show_zh %}
 <div class="unit-section chinese-section">
     <h1 style="text-align: center; line-height: 18pt;">
         <strong><u>單元計劃</u></strong>
@@ -283,7 +327,7 @@
                 <td>{{ plan.learning_outcomes_zh }}</td>
             </tr>
             <tr>
-                <td><strong>評核（如有): </strong></td>
+                <td><strong>評核（如有）:</strong></td>
                 <td>{{ plan.assessments_zh }}</td>
             </tr>
         </tbody>
@@ -394,8 +438,8 @@
     <p>{{ plan.other_considerations_zh }}</p>
 
     <h4 class="section-title">7) 參考資料:</h4>
-    <p>{{ plan.references or '沒有提供參考資料。' }}</p>
-</div>
+    <p>{{ plan.references_zh or plan.references or '沒有提供參考資料。' }}</p>
+{% endif %}
 
 <!-- Action Buttons -->
 <div class="text-center mt-4 no-print">
@@ -403,9 +447,6 @@
     <a href="{{ url_for('create_unit_form') }}" class="btn btn-outline-primary me-2">Create Another Unit Plan</a>
     <a href="{{ url_for('create_lesson_form') }}" class="btn btn-outline-primary me-2">Create Lesson Plan</a>
     <button onclick="window.print()" class="btn btn-outline-primary me-2">Print Plan</button>
-    <button class="btn btn-outline-info" data-bs-toggle="modal" data-bs-target="#feedbackModal">
-        Feedback
-    </button>
 </div>
 
 <button onclick="window.print()" class="btn btn-primary print-btn no-print">
