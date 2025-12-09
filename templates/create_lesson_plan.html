@@ -33,6 +33,19 @@
         color: #69256B;
         border-bottom: 2px solid #69256B;
     }
+    .language-selector {
+        background: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .form-language-section {
+        display: none;
+    }
+    .form-language-section.active {
+        display: block;
+    }
 </style>
 {% endblock %}
 
@@ -42,13 +55,25 @@
 <div class="form-container">
     <form method="POST" action="{{ url_for('create_lesson') }}" enctype="multipart/form-data">
         
+        <!-- Language Selection -->
+        <div class="language-selector">
+            <label class="form-label fw-bold mb-2">Select Template Language:</label>
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="template_language" id="lang_english_lesson" value="english" autocomplete="off" checked>
+                <label class="btn btn-outline-primary" for="lang_english_lesson">English</label>
+                
+                <input type="radio" class="btn-check" name="template_language" id="lang_chinese_lesson" value="chinese" autocomplete="off">
+                <label class="btn btn-outline-primary" for="lang_chinese_lesson">中文 (Chinese)</label>
+            </div>
+        </div>
+        
         <!-- ENGLISH FORM SECTION -->
-        <div class="language-section">
+        <div class="language-section form-language-section active" id="english-section">
             <h4 class="form-section-title">English Version</h4>
             
             <div class="row">
                 <div class="col-sm-6 mb-3">
-                    <label class="form-label required-field">Teacher's Name</label>
+                    <label class="form-label required-field">Student-Teacher's Name</label>
                     <input type="text" class="form-control" name="teacher_name" value="{{ default_teacher }}" required>
                 </div>
                 <div class="col-sm-2 mb-3">
@@ -123,7 +148,7 @@
                     <input type="number" class="form-control" name="unit_duration" value="{{ default_unit_duration }}" required>
                 </div>
                 <div class="col-sm-4 mb-3">
-                    <label class="form-label required-field">Day</label>
+                    <label class="form-label required-field">Day of the unit</label>
                     <input type="number" class="form-control" name="day_of_unit" value="{{ default_day }}" required>
                 </div>
             </div>
@@ -137,173 +162,170 @@
 
             <div class="row">
                 <div class="col-sm-6 mb-3">
-                    <label for="rangeValue" class="form-label">Students' Ability Level (%)</label>
-                    <input type="range" id="rangeInput" name="ability_level" min="0" max="100" value="{{ default_ability }}">
-                    <span id="rangeValue">{{ default_ability }}</span>
+                    <label for="rangeValue" class="form-label">Students' Overall Ability Level (%)</label>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">Low</span>
+                        <input type="range" id="rangeInput" name="ability_level" min="0" max="100" value="{{ default_ability }}" class="flex-grow-1">
+                        <span class="ms-2">High</span>
+                        <span id="rangeValue" class="ms-3">{{ default_ability }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-sm-4 mb-3">
+                    <label class="form-label">Beginner (%)</label>
+                    <input type="number" class="form-control" name="beginner_percent" min="0" max="100" value="0">
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <label class="form-label">Intermediate (%)</label>
+                    <input type="number" class="form-control" name="intermediate_percent" min="0" max="100" value="0">
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <label class="form-label">Advance (%)</label>
+                    <input type="number" class="form-control" name="advance_percent" min="0" max="100" value="0">
+                </div>
+            </div>
+            
+            <!-- Ability Distribution Graphic -->
+            <div class="row mb-4">
+                <div class="col-sm-6">
+                    <label class="form-label">Ability Distribution</label>
+                    <div id="ability-chart" style="height: 50px; border: 1px solid #ddd; background: #f8f9fa; position: relative; display: flex;">
+                        <div id="chart-beginner" style="background: repeating-linear-gradient(45deg, #e9ecef, #e9ecef 10px, #dee2e6 10px, #dee2e6 20px);"></div>
+                        <div id="chart-intermediate" style="background: repeating-linear-gradient(-45deg, #e9ecef, #e9ecef 10px, #dee2e6 10px, #dee2e6 20px);"></div>
+                        <div id="chart-advance" style="background: repeating-linear-gradient(90deg, #e9ecef, #e9ecef 5px, #dee2e6 5px, #dee2e6 10px);"></div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <small id="chart-label-beginner">Beginner: 0%</small>
+                        <small id="chart-label-intermediate">Intermediate: 0%</small>
+                        <small id="chart-label-advance">Advance: 0%</small>
+                    </div>
                 </div>
             </div>
 
+            <h5 class="mt-4 mb-3">1) Lesson Objectives: Students will be able to:</h5>
             <div class="mb-3">
                 <label class="form-label">Psychomotor Performance Objectives</label>
-                <textarea class="form-control" name="psychomotor_objs" rows="3" placeholder="{{ default_psychomotor }}">{{ default_psychomotor }}</textarea>
+                <textarea class="form-control" name="psychomotor_objs" rows="3" placeholder="{{ default_psychomotor }}" required>{{ default_psychomotor }}</textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">Cognitive Performance Objectives</label>
-                <textarea class="form-control" name="cognitive_objs" rows="3" placeholder="{{ default_cognitive }}">{{ default_cognitive }}</textarea>
+                <textarea class="form-control" name="cognitive_objs" rows="3" placeholder="{{ default_cognitive }}" required>{{ default_cognitive }}</textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">Affective Objectives</label>
-                <textarea class="form-control" name="affective_objs" rows="3" placeholder="{{ default_affective }}">{{ default_affective }}</textarea>
+                <textarea class="form-control" name="affective_objs" rows="3" placeholder="{{ default_affective }}" required>{{ default_affective }}</textarea>
             </div>
 
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">Teaching Venue/Facility</label>
-                    <input type="text" class="form-control" name="venue" value="{{ default_venue }}">
+                    <input type="text" class="form-control" name="venue" value="{{ default_venue }}" required>
                 </div>
             </div>
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">Equipment</label>
-                    <textarea class="form-control" name="equipment" rows="1" placeholder="{{ default_equipment }}">{{ default_equipment }}</textarea>
+                    <textarea class="form-control" name="equipment" rows="1" placeholder="{{ default_equipment }}" required>{{ default_equipment }}</textarea>
                 </div>
             </div>
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">Safety Concerns</label>
-                    <textarea class="form-control" name="safety_concerns" rows="1" placeholder="{{ default_safety }}">{{ default_safety }}</textarea>
+                    <textarea class="form-control" name="safety_concerns" rows="1" placeholder="{{ default_safety }}" required>{{ default_safety }}</textarea>
                 </div>
             </div>
 
             <!-- Lesson Sections for English -->
-            <div class="row">
-                <h5>Introductory Activities</h5>
-                <div class="col-sm-1 mb-3">
-                    <label class="form-label">Time</label>
-                    <input type="number" class="form-control" name="intro_time" value="{{ default_intro_time }}">
+            <h5 class="mt-4 mb-3">2) Lesson Planning:</h5>
+            
+            <div class="mb-4">
+                <h6>Introductory Activities</h6>
+                <div id="intro-activities-container">
+                    <!-- Dynamic rows will be added here -->
                 </div>
-                <div class="col-sm-5 mb-3">
-                    <label class="form-label">Teaching Cues/Objectives</label>
-                    <textarea class="form-control" name="intro_cues" rows="1" placeholder="{{ default_intro_cues }}">{{ default_intro_cues }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Class Organisation Diagram</label>
-                    <div class="d-flex gap-2">
-                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
-                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
-                            Create Diagram
-                        </a>
-                    </div>
-                    <small class="form-text text-muted">
-                        Upload an image or create one using our diagram tool
-                    </small>
-                </div>
-                <div class="col-sm-3 mb-3">
-                    <label class="form-label">Equipment</label>
-                    <textarea class="form-control" name="intro_equipment" rows="1" placeholder="{{ default_intro_equip }}">{{ default_intro_equip }}</textarea>
-                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="add-intro-row">+ Add Row</button>
             </div>
-
-            <div class="row">
-                <h5>Skill Development</h5>
-                <div class="col-sm-1 mb-3">
-                    <label class="form-label">Time</label>
-                    <input type="number" class="form-control" name="sd_time" value="{{ default_sd_time }}">
+            
+            <div class="mb-4">
+                <h6>Skill Development</h6>
+                <div id="sd-activities-container">
+                    <!-- Dynamic rows will be added here -->
                 </div>
-                <div class="col-sm-5 mb-3">
-                    <label class="form-label">Teaching Cues/Objectives</label>
-                    <textarea class="form-control" name="sd_cues" rows="1" placeholder="{{ default_sd_cues }}">{{ default_sd_cues }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Class Organisation Diagram</label>
-                    <div class="d-flex gap-2">
-                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
-                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
-                            Create Diagram
-                        </a>
-                    </div>
-                    <small class="form-text text-muted">
-                        Upload an image or create one using our diagram tool
-                    </small>
-                </div>
-                <div class="col-sm-3 mb-3">
-                    <label class="form-label">Equipment</label>
-                    <textarea class="form-control" name="sd_equipment" rows="1" placeholder="{{ default_sd_equip }}">{{ default_sd_equip }}</textarea>
-                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="add-sd-row">+ Add Row</button>
             </div>
-
-            <div class="row">
-                <h5>Application</h5>
-                <div class="col-sm-1 mb-3">
-                    <label class="form-label">Time</label>
-                    <input type="number" class="form-control" name="appli_time" value="{{ default_appli_time }}">
+            
+            <div class="mb-4">
+                <h6>Application</h6>
+                <div id="appli-activities-container">
+                    <!-- Dynamic rows will be added here -->
                 </div>
-                <div class="col-sm-5 mb-3">
-                    <label class="form-label">Teaching Cues/Objectives</label>
-                    <textarea class="form-control" name="appli_cues" rows="1" placeholder="{{ default_appli_cues }}">{{ default_appli_cues }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Class Organisation Diagram</label>
-                    <div class="d-flex gap-2">
-                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
-                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
-                            Create Diagram
-                        </a>
-                    </div>
-                    <small class="form-text text-muted">
-                        Upload an image or create one using our diagram tool
-                    </small>
-                </div>
-                <div class="col-sm-3 mb-3">
-                    <label class="form-label">Equipment</label>
-                    <textarea class="form-control" name="appli_equipment" rows="1" placeholder="{{ default_appli_equip }}">{{ default_appli_equip }}</textarea>
-                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="add-appli-row">+ Add Row</button>
             </div>
-
-            <div class="row">
-                <h5>Concluding Activities</h5>
-                <div class="col-sm-1 mb-3">
-                    <label class="form-label">Time</label>
-                    <input type="number" class="form-control" name="ca_time" value="{{ default_ca_time }}">
+            
+            <div class="mb-4">
+                <h6>Concluding Activities</h6>
+                <div id="ca-activities-container">
+                    <!-- Dynamic rows will be added here -->
                 </div>
-                <div class="col-sm-5 mb-3">
-                    <label class="form-label">Teaching Cues/Objectives</label>
-                    <textarea class="form-control" name="ca_cues" rows="1" placeholder="{{ default_ca_cues }}">{{ default_ca_cues }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Class Organisation Diagram</label>
-                    <div class="d-flex gap-2">
-                        <input type="file" class="form-control" name="intro_file" accept=".png,.jpg,.jpeg,.gif,.svg">
-                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
-                            Create Diagram
-                        </a>
-                    </div>
-                    <small class="form-text text-muted">
-                        Upload an image or create one using our diagram tool
-                    </small>
-                </div>
-                <div class="col-sm-3 mb-3">
-                    <label class="form-label">Equipment</label>
-                    <textarea class="form-control" name="ca_equipment" rows="1" placeholder="{{ default_ca_equip }}">{{ default_ca_equip }}</textarea>
-                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="add-ca-row">+ Add Row</button>
             </div>
-
+            
+            <!-- Template row for activities (hidden) -->
+            <template id="activity-row-template">
+                <div class="activity-row mb-3 p-3 border rounded">
+                    <div class="row">
+                        <div class="col-sm-1 mb-3">
+                            <label class="form-label">Time (mins)</label>
+                            <input type="number" class="form-control activity-time" name="" required>
+                        </div>
+                        <div class="col-sm-4 mb-3">
+                            <label class="form-label">Teaching content/ Activity</label>
+                            <textarea class="form-control activity-content" name="" rows="1" required></textarea>
+                        </div>
+                        <div class="col-sm-4 mb-3">
+                            <label class="form-label">Teaching Cues/Objectives</label>
+                            <textarea class="form-control activity-cues" name="" rows="1" required></textarea>
+                        </div>
+                        <div class="col-sm-2 mb-3">
+                            <label class="form-label">Equipment</label>
+                            <textarea class="form-control activity-equipment" name="" rows="1" required></textarea>
+                        </div>
+                        <div class="col-sm-1 mb-3">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-activity-row">Remove</button>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Class Organisation Diagram</label>
+                        <div class="d-flex gap-2">
+                            <input type="file" class="form-control activity-diagram" name="" accept=".png,.jpg,.jpeg,.gif,.svg">
+                            <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">
+                                Create Diagram
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            
+            <h5 class="mt-4 mb-3">3) After Lesson:</h5>
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">Follow-up Actions</label>
-                    <textarea class="form-control" name="followup_actions" rows="1" placeholder="{{ default_followup }}">{{ default_followup }}</textarea>
+                    <textarea class="form-control" name="followup_actions" rows="1" placeholder="{{ default_followup }}" required>{{ default_followup }}</textarea>
                 </div>
             </div>
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">Self-reflection</label>
-                    <textarea class="form-control" name="self_reflection" rows="1" placeholder="{{ default_reflection }}">{{ default_reflection }}</textarea>
+                    <textarea class="form-control" name="self_reflection" rows="1" placeholder="{{ default_reflection }}" required>{{ default_reflection }}</textarea>
                 </div>
             </div>
         </div>
 
         <!-- CHINESE FORM SECTION -->
-        <div class="language-section chinese-form">
+        <div class="language-section chinese-form form-language-section" id="chinese-section">
             <h4 class="form-section-title">中文版本 Chinese Version</h4>
             
             <!-- Chinese form fields with placeholders and values -->
@@ -392,52 +414,123 @@
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">本教節的教學主題</label>
-                    <input type="text" class="form-control" name="lesson_theme_zh" value="{{ default_theme_zh }}">
+                    <input type="text" class="form-control" name="lesson_theme_zh" value="{{ default_theme_zh }}" required>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-sm-6 mb-3">
-                    <label for="rangeValue_zh" class="form-label">學生能力水平 (%)</label>
-                    <input type="range" id="rangeInput_zh" name="ability_level_zh" min="0" max="100" value="{{ default_ability }}">
-                    <span id="rangeValue_zh">{{ default_ability }}</span>
+                    <label for="rangeValue_zh" class="form-label">學生整體能力水平 (%)</label>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">低</span>
+                        <input type="range" id="rangeInput_zh" name="ability_level_zh" min="0" max="100" value="{{ default_ability }}" class="flex-grow-1">
+                        <span class="ms-2">高</span>
+                        <span id="rangeValue_zh" class="ms-3">{{ default_ability }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-sm-4 mb-3">
+                    <label class="form-label">初學者 (%)</label>
+                    <input type="number" class="form-control" name="beginner_percent_zh" min="0" max="100" value="0">
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <label class="form-label">中級 (%)</label>
+                    <input type="number" class="form-control" name="intermediate_percent_zh" min="0" max="100" value="0">
+                </div>
+                <div class="col-sm-4 mb-3">
+                    <label class="form-label">高級 (%)</label>
+                    <input type="number" class="form-control" name="advance_percent_zh" min="0" max="100" value="0">
+                </div>
+            </div>
+            
+            <!-- Ability Distribution Graphic (Chinese) -->
+            <div class="row mb-4">
+                <div class="col-sm-6">
+                    <label class="form-label">能力分佈</label>
+                    <div id="ability-chart-zh" style="height: 50px; border: 1px solid #ddd; background: #f8f9fa; position: relative; display: flex;">
+                        <div id="chart-beginner-zh" style="background: repeating-linear-gradient(45deg, #e9ecef, #e9ecef 10px, #dee2e6 10px, #dee2e6 20px);"></div>
+                        <div id="chart-intermediate-zh" style="background: repeating-linear-gradient(-45deg, #e9ecef, #e9ecef 10px, #dee2e6 10px, #dee2e6 20px);"></div>
+                        <div id="chart-advance-zh" style="background: repeating-linear-gradient(90deg, #e9ecef, #e9ecef 5px, #dee2e6 5px, #dee2e6 10px);"></div>
+                    </div>
+                    <div class="d-flex justify-content-between mt-2">
+                        <small id="chart-label-beginner-zh">初學者: 0%</small>
+                        <small id="chart-label-intermediate-zh">中級: 0%</small>
+                        <small id="chart-label-advance-zh">高級: 0%</small>
+                    </div>
                 </div>
             </div>
 
+            <h5 class="mt-4 mb-3">1) 教學目標：學生將能</h5>
             <div class="mb-3">
                 <label class="form-label">技能表現目標</label>
-                <textarea class="form-control" name="psychomotor_objs_zh" rows="3" placeholder="{{ default_psychomotor_zh }}">{{ default_psychomotor_zh }}</textarea>
+                <textarea class="form-control" name="psychomotor_objs_zh" rows="3" placeholder="{{ default_psychomotor_zh }}" required>{{ default_psychomotor_zh }}</textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">認知表現目標</label>
-                <textarea class="form-control" name="cognitive_objs_zh" rows="3" placeholder="{{ default_cognitive_zh }}">{{ default_cognitive_zh }}</textarea>
+                <textarea class="form-control" name="cognitive_objs_zh" rows="3" placeholder="{{ default_cognitive_zh }}" required>{{ default_cognitive_zh }}</textarea>
             </div>
             <div class="mb-3">
                 <label class="form-label">情意表現目標</label>
-                <textarea class="form-control" name="affective_objs_zh" rows="3" placeholder="{{ default_affective_zh }}">{{ default_affective_zh }}</textarea>
+                <textarea class="form-control" name="affective_objs_zh" rows="3" placeholder="{{ default_affective_zh }}" required>{{ default_affective_zh }}</textarea>
             </div>
 
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">教學場地/設施</label>
-                    <input type="text" class="form-control" name="venue_zh" value="{{ default_venue_zh }}">
+                    <input type="text" class="form-control" name="venue_zh" value="{{ default_venue_zh }}" required>
                 </div>
             </div>
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">器材</label>
-                    <textarea class="form-control" name="equipment_zh" rows="1" placeholder="{{ default_equipment_zh }}">{{ default_equipment_zh }}</textarea>
+                    <textarea class="form-control" name="equipment_zh" rows="1" placeholder="{{ default_equipment_zh }}" required>{{ default_equipment_zh }}</textarea>
                 </div>
             </div>
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">安全考慮</label>
-                    <textarea class="form-control" name="safety_concerns_zh" rows="1" placeholder="{{ default_safety_zh }}">{{ default_safety_zh }}</textarea>
+                    <textarea class="form-control" name="safety_concerns_zh" rows="1" placeholder="{{ default_safety_zh }}" required>{{ default_safety_zh }}</textarea>
                 </div>
             </div>
 
             <!-- Chinese Lesson Sections -->
-            <div class="row">
+            <h5 class="mt-4 mb-3">2) 教案規劃：</h5>
+            
+            <div class="mb-4">
+                <h6>引入活動</h6>
+                <div id="intro-activities-container-zh">
+                    <!-- Dynamic rows will be added here -->
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="add-intro-row-zh">+ 新增行</button>
+            </div>
+            
+            <div class="mb-4">
+                <h6>技能發展</h6>
+                <div id="sd-activities-container-zh">
+                    <!-- Dynamic rows will be added here -->
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="add-sd-row-zh">+ 新增行</button>
+            </div>
+            
+            <div class="mb-4">
+                <h6>鞏固/應用活動</h6>
+                <div id="appli-activities-container-zh">
+                    <!-- Dynamic rows will be added here -->
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="add-appli-row-zh">+ 新增行</button>
+            </div>
+            
+            <div class="mb-4">
+                <h6>整理活動</h6>
+                <div id="ca-activities-container-zh">
+                    <!-- Dynamic rows will be added here -->
+                </div>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="add-ca-row-zh">+ 新增行</button>
+            </div>
+            
+            <div class="row" style="display: none;">
                 <h5>引入活動</h5>
                 <div class="col-sm-1 mb-3">
                     <label class="form-label">時間</label>
@@ -549,16 +642,17 @@
                 </div>
             </div>
 
+            <h5 class="mt-4 mb-3">3) 課堂完結後：</h5>
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">跟進事項</label>
-                    <textarea class="form-control" name="followup_actions_zh" rows="1" placeholder="{{ default_followup_zh }}">{{ default_followup_zh }}</textarea>
+                    <textarea class="form-control" name="followup_actions_zh" rows="1" placeholder="{{ default_followup_zh }}" required>{{ default_followup_zh }}</textarea>
                 </div>
             </div>
             <div class="row">
                 <div class="mb-3">
                     <label class="form-label">自我反思</label>
-                    <textarea class="form-control" name="self_reflection_zh" rows="1" placeholder="{{ default_reflection_zh }}">{{ default_reflection_zh }}</textarea>
+                    <textarea class="form-control" name="self_reflection_zh" rows="1" placeholder="{{ default_reflection_zh }}" required>{{ default_reflection_zh }}</textarea>
                 </div>
             </div>
         </div>
@@ -571,18 +665,168 @@
 </div>
 
 <script>
-    // English range slider
-    const rangeInput = document.getElementById('rangeInput');
-    const rangeValue = document.getElementById('rangeValue');
-    rangeInput.addEventListener('input', () => {
-        rangeValue.textContent = rangeInput.value;
-    });
-
-    // Chinese range slider
-    const rangeInputZh = document.getElementById('rangeInput_zh');
-    const rangeValueZh = document.getElementById('rangeValue_zh');
-    rangeInputZh.addEventListener('input', () => {
-        rangeValueZh.textContent = rangeInputZh.value;
+    document.addEventListener('DOMContentLoaded', function() {
+        // Language selection toggle
+        const langRadios = document.querySelectorAll('input[name="template_language"]');
+        const englishSection = document.getElementById('english-section');
+        const chineseSection = document.getElementById('chinese-section');
+        
+        langRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'english') {
+                    englishSection.classList.add('active');
+                    chineseSection.classList.remove('active');
+                } else {
+                    englishSection.classList.remove('active');
+                    chineseSection.classList.add('active');
+                }
+            });
+        });
+        
+        // Range sliders
+        const rangeInput = document.getElementById('rangeInput');
+        const rangeValue = document.getElementById('rangeValue');
+        if (rangeInput && rangeValue) {
+            rangeInput.addEventListener('input', () => {
+                rangeValue.textContent = rangeInput.value;
+            });
+        }
+        
+        const rangeInputZh = document.getElementById('rangeInput_zh');
+        const rangeValueZh = document.getElementById('rangeValue_zh');
+        if (rangeInputZh && rangeValueZh) {
+            rangeInputZh.addEventListener('input', () => {
+                rangeValueZh.textContent = rangeInputZh.value;
+            });
+        }
+        
+        // Ability chart update function
+        function updateAbilityChart(lang) {
+            const prefix = lang === 'zh' ? '_zh' : '';
+            const beginner = parseInt(document.querySelector(`input[name="beginner_percent${prefix}"]`)?.value || 0);
+            const intermediate = parseInt(document.querySelector(`input[name="intermediate_percent${prefix}"]`)?.value || 0);
+            const advance = parseInt(document.querySelector(`input[name="advance_percent${prefix}"]`)?.value || 0);
+            
+            const total = beginner + intermediate + advance;
+            if (total === 0) return;
+            
+            const beginnerPercent = (beginner / total) * 100;
+            const intermediatePercent = (intermediate / total) * 100;
+            const advancePercent = (advance / total) * 100;
+            
+            const chartBeginner = document.getElementById(`chart-beginner${prefix || ''}`);
+            const chartIntermediate = document.getElementById(`chart-intermediate${prefix || ''}`);
+            const chartAdvance = document.getElementById(`chart-advance${prefix || ''}`);
+            
+            if (chartBeginner) chartBeginner.style.width = beginnerPercent + '%';
+            if (chartIntermediate) chartIntermediate.style.width = intermediatePercent + '%';
+            if (chartAdvance) chartAdvance.style.width = advancePercent + '%';
+            
+            const labelBeginner = document.getElementById(`chart-label-beginner${prefix || ''}`);
+            const labelIntermediate = document.getElementById(`chart-label-intermediate${prefix || ''}`);
+            const labelAdvance = document.getElementById(`chart-label-advance${prefix || ''}`);
+            
+            if (lang === 'zh') {
+                if (labelBeginner) labelBeginner.textContent = `初學者: ${Math.round(beginnerPercent)}%`;
+                if (labelIntermediate) labelIntermediate.textContent = `中級: ${Math.round(intermediatePercent)}%`;
+                if (labelAdvance) labelAdvance.textContent = `高級: ${Math.round(advancePercent)}%`;
+            } else {
+                if (labelBeginner) labelBeginner.textContent = `Beginner: ${Math.round(beginnerPercent)}%`;
+                if (labelIntermediate) labelIntermediate.textContent = `Intermediate: ${Math.round(intermediatePercent)}%`;
+                if (labelAdvance) labelAdvance.textContent = `Advance: ${Math.round(advancePercent)}%`;
+            }
+        }
+        
+        // Listen for ability percentage changes
+        ['beginner_percent', 'intermediate_percent', 'advance_percent'].forEach(field => {
+            const input = document.querySelector(`input[name="${field}"]`);
+            if (input) input.addEventListener('input', () => updateAbilityChart(''));
+            
+            const inputZh = document.querySelector(`input[name="${field}_zh"]`);
+            if (inputZh) inputZh.addEventListener('input', () => updateAbilityChart('zh'));
+        });
+        
+        // Activity row management
+        let activityCounters = {
+            intro: 0, sd: 0, appli: 0, ca: 0,
+            intro_zh: 0, sd_zh: 0, appli_zh: 0, ca_zh: 0
+        };
+        
+        function addActivityRow(section, lang) {
+            const prefix = lang === 'zh' ? '_zh' : '';
+            const container = document.getElementById(`${section}-activities-container${prefix}`);
+            const counter = ++activityCounters[section + prefix];
+            
+            const row = document.createElement('div');
+            row.className = 'activity-row mb-3 p-3 border rounded';
+            row.dataset.index = counter;
+            
+            const timeLabel = lang === 'zh' ? '時間（分鐘）' : 'Time (mins)';
+            const contentLabel = lang === 'zh' ? '教學內容/活動' : 'Teaching content/ Activity';
+            const cuesLabel = lang === 'zh' ? '教學要點/目標' : 'Teaching Cues/Objectives';
+            const equipLabel = lang === 'zh' ? '器材' : 'Equipment';
+            const diagramLabel = lang === 'zh' ? '課堂組織圖表' : 'Class Organisation Diagram';
+            const createDiagram = lang === 'zh' ? '建立圖表' : 'Create Diagram';
+            const removeBtn = lang === 'zh' ? '移除' : 'Remove';
+            
+            row.innerHTML = `
+                <div class="row">
+                    <div class="col-sm-1 mb-3">
+                        <label class="form-label">${timeLabel}</label>
+                        <input type="number" class="form-control" name="${section}_time_${counter}${prefix}" required>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label class="form-label">${contentLabel}</label>
+                        <textarea class="form-control" name="${section}_content_${counter}${prefix}" rows="1" required></textarea>
+                    </div>
+                    <div class="col-sm-4 mb-3">
+                        <label class="form-label">${cuesLabel}</label>
+                        <textarea class="form-control" name="${section}_cues_${counter}${prefix}" rows="1" required></textarea>
+                    </div>
+                    <div class="col-sm-2 mb-3">
+                        <label class="form-label">${equipLabel}</label>
+                        <textarea class="form-control" name="${section}_equipment_${counter}${prefix}" rows="1" required></textarea>
+                    </div>
+                    <div class="col-sm-1 mb-3">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-activity-row">${removeBtn}</button>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">${diagramLabel}</label>
+                    <div class="d-flex gap-2">
+                        <input type="file" class="form-control" name="${section}_file_${counter}${prefix}" accept=".png,.jpg,.jpeg,.gif,.svg">
+                        <a href="{{ url_for('diagram_tool') }}" target="_blank" class="btn btn-outline-secondary">${createDiagram}</a>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(row);
+            
+            row.querySelector('.remove-activity-row').addEventListener('click', function() {
+                row.remove();
+            });
+        }
+        
+        // Add buttons for English
+        ['intro', 'sd', 'appli', 'ca'].forEach(section => {
+            const btn = document.getElementById(`add-${section}-row`);
+            if (btn) {
+                btn.addEventListener('click', () => addActivityRow(section, ''));
+                // Add initial row
+                addActivityRow(section, '');
+            }
+        });
+        
+        // Add buttons for Chinese
+        ['intro', 'sd', 'appli', 'ca'].forEach(section => {
+            const btn = document.getElementById(`add-${section}-row-zh`);
+            if (btn) {
+                btn.addEventListener('click', () => addActivityRow(section, 'zh'));
+                // Add initial row
+                addActivityRow(section, 'zh');
+            }
+        });
     });
 </script>
 {% endblock %}

@@ -6,6 +6,26 @@
     <title>{% block title %}staffroom{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/diagram-tool.css') }}" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .main-content {
+            flex: 1;
+            padding-bottom: 2rem;
+        }
+        footer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+        }
+    </style>
     {% block styles %}{% endblock %}
 </head>
 <body>
@@ -37,14 +57,21 @@
     </nav>
 
     <!-- Main Content -->
-    <div class="container mt-4">
+    <div class="container mt-4 main-content">
         {% block content %}{% endblock %}
     </div>
 
     <!-- Footer -->
-    <footer class="bg-light text-center p-4 mt-5">
-        <p>CUHK Department of Sports Science and Physical Education © 2025</p>
-        <p>CUHK Faculty of Education</p>
+    <footer class="bg-light text-center p-4">
+        <div>
+            <p class="mb-1">CUHK Department of Sports Science and Physical Education © 2025</p>
+            <p class="mb-1">CUHK Faculty of Education</p>
+            <p class="mb-0 small text-muted">
+                By using this website, you agree to our 
+                <a href="/TOS.md" target="_blank" class="text-decoration-none">Terms of Service</a>, 
+                which includes the storage and analysis of your data.
+            </p>
+        </div>
     </footer>
 
     <!-- Feedback Modal -->

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Terms of Service - staffroom{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <h1 class="mb-4">Terms of Service</h1>
+        <div class="card">
+            <div class="card-body">
+                <div class="tos-content">
+                    {{ tos_content | safe }}
+                </div>
+            </div>
+        </div>
+        <div class="mt-4 text-center">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Return to Home</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .tos-content {
+        line-height: 1.8;
+        font-size: 1rem;
+    }
+    .tos-content h1 {
+        font-size: 2rem;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        border-bottom: 2px solid #dee2e6;
+        padding-bottom: 0.5rem;
+    }
+    .tos-content h2 {
+        font-size: 1.5rem;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        color: #495057;
+    }
+    .tos-content h3 {
+        font-size: 1.25rem;
+        margin-top: 1.25rem;
+        margin-bottom: 0.5rem;
+        color: #6c757d;
+    }
+    .tos-content p {
+        margin-bottom: 1rem;
+    }
+    .tos-content ul, .tos-content ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+    .tos-content li {
+        margin-bottom: 0.5rem;
+    }
+    .tos-content strong {
+        font-weight: 600;
+        color: #212529;
+    }
+</style>
+{% endblock %}
+
