@@ -311,6 +311,10 @@ The application is currently deployed on **Vercel**:
   - File size limit: 2MB
 - **Input Validation**: Form data is validated on both client and server side
 - **CORS**: Currently allows requests from the deployed domain
+- **Environment Variables**: Never commit `.env` files or sensitive credentials to git
+  - All secrets must be stored as environment variables
+  - If credentials are accidentally committed, they must be rotated immediately
+  - Use `git filter-repo` to remove sensitive data from git history if needed
 
 ---
 
