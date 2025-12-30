@@ -34,12 +34,7 @@ app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB max file size
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg'}
 
 # Database setup (Supabase Postgres via standard connection URL)
-# Support multiple environment variable names from Vercel Supabase Integration
-DATABASE_URL = (
-    os.environ.get('DATABASE_URL') or 
-    os.environ.get('POSTGRES_URL') or 
-    os.environ.get('POSTGRES_PRISMA_URL')
-)
+# Environment variables are checked at runtime (not module load time) for serverless compatibility
 
 def ensure_ssl_in_connection_string(conn_string):
     """Ensure SSL mode is set in connection string for Supabase."""
@@ -53,7 +48,42 @@ def ensure_ssl_in_connection_string(conn_string):
         conn_string += '?sslmode=require'
     return conn_string
 
-DATABASE_URL = ensure_ssl_in_connection_string(DATABASE_URL) if DATABASE_URL else None
+
+def get_database_url():
+    """
+    Get database connection URL from environment variables at runtime.
+    Supports multiple variable names used by Vercel Supabase Integration.
+    """
+    # Check for environment variables in order of preference
+    # Vercel Supabase Integration may set any of these
+    env_var_names = [
+        'DATABASE_URL',
+        'POSTGRES_URL',
+        'POSTGRES_PRISMA_URL',
+        'POSTGRES_URL_NON_POOLING',
+        'SUPABASE_DB_URL',
+        'SUPABASE_POSTGRES_URL',
+    ]
+    
+    for var_name in env_var_names:
+        url = os.environ.get(var_name)
+        if url:
+            # Log which variable was found (for debugging, but mask sensitive parts)
+            masked_url = url.split('@')[-1] if '@' in url else '***'
+            print(f"Found database URL from environment variable: {var_name} (host: {masked_url})")
+            return ensure_ssl_in_connection_string(url)
+    
+    # If no variable found, log available environment variables for debugging
+    # (only log variable names, not values, for security)
+    all_env_vars = list(os.environ.keys())
+    postgres_vars = [v for v in all_env_vars if 'POSTGRES' in v.upper() or 'DATABASE' in v.upper() or 'SUPABASE' in v.upper()]
+    print(f"No database URL found. Checked: {', '.join(env_var_names)}")
+    if postgres_vars:
+        print(f"Found related environment variables: {', '.join(postgres_vars)}")
+    else:
+        print("No database-related environment variables found.")
+    
+    return None
 
 # Object storage (S3-compatible, e.g., Supabase storage)
 STORAGE_BUCKET = os.environ.get('STORAGE_BUCKET')
@@ -120,19 +150,34 @@ def process_uploaded_file(file_field):
 
 def get_db_conn():
     """Create a new database connection. Serverless-friendly (no pooling)."""
-    if not DATABASE_URL or not psycopg2:
+    if not psycopg2:
+        raise RuntimeError("psycopg2 is not installed. Database functionality is unavailable.")
+    
+    # Get database URL at runtime (not module load time) for serverless compatibility
+    database_url = get_database_url()
+    
+    if not database_url:
         raise RuntimeError(
-            "Database is not configured. Set DATABASE_URL, POSTGRES_URL, or POSTGRES_PRISMA_URL."
+            "Database is not configured. Set one of: DATABASE_URL, POSTGRES_URL, POSTGRES_PRISMA_URL, "
+            "POSTGRES_URL_NON_POOLING, SUPABASE_DB_URL, or SUPABASE_POSTGRES_URL."
         )
+    
     try:
         # Create a new connection for each request (serverless-friendly)
         # SSL is handled via connection string parameters
-        conn = psycopg2.connect(DATABASE_URL)
+        conn = psycopg2.connect(database_url)
         return conn
     except Exception as e:
         # Log error for debugging in Vercel logs
         print(f"Database connection error: {str(e)}")
-        raise RuntimeError(f"Failed to connect to database: {str(e)}")
+        # Mask sensitive connection string in error message
+        error_msg = str(e)
+        if '@' in error_msg:
+            # Mask password in error messages
+            parts = error_msg.split('@')
+            if len(parts) > 1:
+                error_msg = '***@' + '@'.join(parts[1:])
+        raise RuntimeError(f"Failed to connect to database: {error_msg}")
 
 
 @contextmanager
