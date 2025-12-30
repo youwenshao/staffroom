@@ -394,12 +394,8 @@ def list_plans_for_user(table_name: str, user):
             where_clause = """
                 WHERE p.owner_id = %s
                    OR %s = ANY(p.shared_professors)
-                   OR EXISTS (
-                       SELECT 1 FROM professor_student ps
-                       WHERE ps.professor_id = %s AND ps.student_id = p.owner_id
-                   )
             """
-            params = [user["id"], user["id"], user["id"]]
+            params = [user["id"], user["id"]]
         else:
             where_clause = "WHERE p.owner_id = %s"
             params = [user["id"]]
@@ -436,7 +432,7 @@ def can_access_plan(record, user):
         shared_professors = record.get("shared_professors") or []
         if user["id"] in shared_professors:
             return True
-        return is_professor_for_student(user["id"], record["owner_id"])
+        return False
     return False
 
 

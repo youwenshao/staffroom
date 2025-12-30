@@ -46,7 +46,6 @@ Staffroom simplifies the process of creating professional physical education les
 This application is designed for:
 - **SSPE Students**: Current students in the Department of Sports Science and Physical Education at CUHK
 - **Faculty Members**: Instructors who need to review or create teaching plans
-- **IT Staff**: Department IT personnel responsible for maintaining and reviewing the application
 
 ---
 
@@ -214,7 +213,7 @@ This application is designed for:
 
 ## Technical Information
 
-*This section is intended for IT staff and developers reviewing the codebase.*
+*This section is intended for developers reviewing the codebase.*
 
 ### System Requirements
 
@@ -402,7 +401,7 @@ create index unit_shared_idx on unit_plans using gin (shared_professors);
 ### Role behavior
 
 - `student-teacher`: create/view own plans; pick professors to share; saved to Postgres.
-- `professor`: create/view own plans + any student-teacher who shared with them or is mapped in `professor_student`.
+- `professor`: create/view own plans + any student-teacher who shared with them.
 - `admin`: full visibility.
 - `guest`: browsing only; no saving/retrieval.
 
@@ -417,7 +416,7 @@ If you encounter issues or have questions:
 2. Contact your course instructor
 3. Use the feedback form on the website (if available)
 
-### For IT Staff
+### More Technical Details
 
 **Code Review Information**:
 - Templates use Jinja2 syntax for dynamic content.
@@ -444,4 +443,4 @@ Users should review the Terms of Service available at `/TOS.md` or the Terms of 
 
 ---
 
-*Last Updated: January 2025*
+*Last Updated: December 2025*
