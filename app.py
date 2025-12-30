@@ -34,10 +34,26 @@ app.config['MAX_CONTENT_LENGTH'] = 2 * 1024 * 1024  # 2MB max file size
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg'}
 
 # Database setup (Supabase Postgres via standard connection URL)
-DATABASE_URL = os.environ.get('DATABASE_URL')
-db_pool = None
-if DATABASE_URL and psycopg2:
-    db_pool = pool.SimpleConnectionPool(1, 5, DATABASE_URL, sslmode='require')
+# Support multiple environment variable names from Vercel Supabase Integration
+DATABASE_URL = (
+    os.environ.get('DATABASE_URL') or 
+    os.environ.get('POSTGRES_URL') or 
+    os.environ.get('POSTGRES_PRISMA_URL')
+)
+
+def ensure_ssl_in_connection_string(conn_string):
+    """Ensure SSL mode is set in connection string for Supabase."""
+    if not conn_string:
+        return conn_string
+    # If connection string already has parameters, append sslmode
+    if '?' in conn_string:
+        if 'sslmode=' not in conn_string:
+            conn_string += '&sslmode=require'
+    else:
+        conn_string += '?sslmode=require'
+    return conn_string
+
+DATABASE_URL = ensure_ssl_in_connection_string(DATABASE_URL) if DATABASE_URL else None
 
 # Object storage (S3-compatible, e.g., Supabase storage)
 STORAGE_BUCKET = os.environ.get('STORAGE_BUCKET')
@@ -103,23 +119,43 @@ def process_uploaded_file(file_field):
 
 
 def get_db_conn():
-    if not db_pool:
-        raise RuntimeError("Database is not configured. Set DATABASE_URL.")
-    return db_pool.getconn()
+    """Create a new database connection. Serverless-friendly (no pooling)."""
+    if not DATABASE_URL or not psycopg2:
+        raise RuntimeError(
+            "Database is not configured. Set DATABASE_URL, POSTGRES_URL, or POSTGRES_PRISMA_URL."
+        )
+    try:
+        # Create a new connection for each request (serverless-friendly)
+        # SSL is handled via connection string parameters
+        conn = psycopg2.connect(DATABASE_URL)
+        return conn
+    except Exception as e:
+        # Log error for debugging in Vercel logs
+        print(f"Database connection error: {str(e)}")
+        raise RuntimeError(f"Failed to connect to database: {str(e)}")
 
 
 @contextmanager
 def db_cursor():
-    conn = get_db_conn()
-    cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+    """Context manager for database operations with automatic cleanup."""
+    conn = None
     try:
-        yield conn, cur
-        conn.commit()
-    except Exception:
-        conn.rollback()
-        raise
+        conn = get_db_conn()
+        cur = conn.cursor(cursor_factory=extras.RealDictCursor)
+        try:
+            yield conn, cur
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            # Log error for debugging
+            print(f"Database operation error: {str(e)}")
+            raise
     finally:
-        db_pool.putconn(conn)
+        if conn:
+            try:
+                conn.close()
+            except Exception as e:
+                print(f"Error closing database connection: {str(e)}")
 
 
 def hash_password(password: str) -> str:
@@ -131,49 +167,73 @@ def verify_password(password: str, hashed: str) -> bool:
 
 
 def get_user_by_username(username: str):
-    with db_cursor() as (_, cur):
-        cur.execute("SELECT id, username, password_hash, role FROM users WHERE username=%s", (username,))
-        return cur.fetchone()
+    """Get user by username. Returns None if not found or on error."""
+    try:
+        with db_cursor() as (_, cur):
+            cur.execute("SELECT id, username, password_hash, role FROM users WHERE username=%s", (username,))
+            return cur.fetchone()
+    except Exception as e:
+        print(f"Error fetching user '{username}': {str(e)}")
+        return None
 
 
 def create_user(username: str, password: str, role: str):
+    """Create a new user. Raises exception on error."""
     hashed = hash_password(password)
-    with db_cursor() as (_, cur):
-        cur.execute(
-            "INSERT INTO users (username, password_hash, role) VALUES (%s, %s, %s) RETURNING id, username, role",
-            (username, hashed, role),
-        )
-        return cur.fetchone()
+    try:
+        with db_cursor() as (_, cur):
+            cur.execute(
+                "INSERT INTO users (username, password_hash, role) VALUES (%s, %s, %s) RETURNING id, username, role",
+                (username, hashed, role),
+            )
+            return cur.fetchone()
+    except Exception as e:
+        print(f"Error creating user '{username}': {str(e)}")
+        raise
 
 
 def get_professors():
-    with db_cursor() as (_, cur):
-        cur.execute("SELECT id, username FROM users WHERE role = 'professor' ORDER BY username")
-        return cur.fetchall()
+    """Get list of all professors. Returns empty list on error."""
+    try:
+        with db_cursor() as (_, cur):
+            cur.execute("SELECT id, username FROM users WHERE role = 'professor' ORDER BY username")
+            return cur.fetchall()
+    except Exception as e:
+        print(f"Error fetching professors: {str(e)}")
+        return []
 
 
 def ensure_professor_student_links(student_id: int, professor_ids):
+    """Create professor-student links. Silently fails on error."""
     if not professor_ids:
         return
-    with db_cursor() as (_, cur):
-        for pid in professor_ids:
-            cur.execute(
-                """
-                INSERT INTO professor_student (professor_id, student_id)
-                VALUES (%s, %s)
-                ON CONFLICT DO NOTHING
-                """,
-                (pid, student_id),
-            )
+    try:
+        with db_cursor() as (_, cur):
+            for pid in professor_ids:
+                cur.execute(
+                    """
+                    INSERT INTO professor_student (professor_id, student_id)
+                    VALUES (%s, %s)
+                    ON CONFLICT DO NOTHING
+                    """,
+                    (pid, student_id),
+                )
+    except Exception as e:
+        print(f"Error creating professor-student links: {str(e)}")
 
 
 def is_professor_for_student(professor_id: int, student_id: int) -> bool:
-    with db_cursor() as (_, cur):
-        cur.execute(
-            "SELECT 1 FROM professor_student WHERE professor_id=%s AND student_id=%s LIMIT 1",
-            (professor_id, student_id),
-        )
-        return cur.fetchone() is not None
+    """Check if professor is linked to student. Returns False on error."""
+    try:
+        with db_cursor() as (_, cur):
+            cur.execute(
+                "SELECT 1 FROM professor_student WHERE professor_id=%s AND student_id=%s LIMIT 1",
+                (professor_id, student_id),
+            )
+            return cur.fetchone() is not None
+    except Exception as e:
+        print(f"Error checking professor-student link: {str(e)}")
+        return False
 
 
 def get_current_user():
@@ -204,82 +264,97 @@ def login_required(allow_guest=False):
 
 
 def save_plan_record(table_name: str, owner_id: int, plan_data: dict, shared_professors):
-    with db_cursor() as (_, cur):
-        cur.execute(
-            f"""
-            INSERT INTO {table_name} (owner_id, plan_data, shared_professors)
-            VALUES (%s, %s, %s)
-            RETURNING id
-            """,
-            (owner_id, json.dumps(plan_data), shared_professors or []),
-        )
-        row = cur.fetchone()
-        return row["id"]
+    """Save a plan record. Raises exception on error."""
+    try:
+        with db_cursor() as (_, cur):
+            cur.execute(
+                f"""
+                INSERT INTO {table_name} (owner_id, plan_data, shared_professors)
+                VALUES (%s, %s, %s)
+                RETURNING id
+                """,
+                (owner_id, json.dumps(plan_data), shared_professors or []),
+            )
+            row = cur.fetchone()
+            return row["id"]
+    except Exception as e:
+        print(f"Error saving plan to {table_name}: {str(e)}")
+        raise
 
 
 def fetch_plan_record(table_name: str, plan_id: int):
-    with db_cursor() as (_, cur):
-        cur.execute(
-            f"""
-            SELECT p.id, p.owner_id, p.plan_data, p.shared_professors, p.created_at, u.username as owner_username
-            FROM {table_name} p
-            JOIN users u ON p.owner_id = u.id
-            WHERE p.id = %s
-            """,
-            (plan_id,),
-        )
-        return cur.fetchone()
+    """Fetch a plan record. Returns None if not found or on error."""
+    try:
+        with db_cursor() as (_, cur):
+            cur.execute(
+                f"""
+                SELECT p.id, p.owner_id, p.plan_data, p.shared_professors, p.created_at, u.username as owner_username
+                FROM {table_name} p
+                JOIN users u ON p.owner_id = u.id
+                WHERE p.id = %s
+                """,
+                (plan_id,),
+            )
+            return cur.fetchone()
+    except Exception as e:
+        print(f"Error fetching plan from {table_name} (id={plan_id}): {str(e)}")
+        return None
 
 
 def list_plans_for_user(table_name: str, user):
+    """List plans for a user. Returns empty list on error."""
     if not user or user.get("is_guest"):
         return []
 
-    base_select = f"""
-        SELECT p.id,
-               p.created_at,
-               p.owner_id,
-               u.username as owner_username,
-               p.plan_data,
-               p.shared_professors
-        FROM {table_name} p
-        JOIN users u ON p.owner_id = u.id
-    """
-    params = []
-    where_clause = ""
-
-    if user["role"] == "admin":
-        where_clause = ""
-    elif user["role"] == "professor":
-        where_clause = """
-            WHERE p.owner_id = %s
-               OR %s = ANY(p.shared_professors)
-               OR EXISTS (
-                   SELECT 1 FROM professor_student ps
-                   WHERE ps.professor_id = %s AND ps.student_id = p.owner_id
-               )
+    try:
+        base_select = f"""
+            SELECT p.id,
+                   p.created_at,
+                   p.owner_id,
+                   u.username as owner_username,
+                   p.plan_data,
+                   p.shared_professors
+            FROM {table_name} p
+            JOIN users u ON p.owner_id = u.id
         """
-        params = [user["id"], user["id"], user["id"]]
-    else:
-        where_clause = "WHERE p.owner_id = %s"
-        params = [user["id"]]
+        params = []
+        where_clause = ""
 
-    with db_cursor() as (_, cur):
-        cur.execute(base_select + " " + where_clause + " ORDER BY p.created_at DESC", params)
-        rows = cur.fetchall()
-        summarized = []
-        for row in rows:
-            plan_data = row["plan_data"] or {}
-            title = plan_data.get("lesson_theme") or plan_data.get("unit_topic") or plan_data.get("topic") or "Untitled"
-            summarized.append(
-                {
-                    "id": row["id"],
-                    "owner_username": row["owner_username"],
-                    "created_at": row["created_at"].strftime("%Y-%m-%d %H:%M"),
-                    "title": title,
-                }
-            )
-        return summarized
+        if user["role"] == "admin":
+            where_clause = ""
+        elif user["role"] == "professor":
+            where_clause = """
+                WHERE p.owner_id = %s
+                   OR %s = ANY(p.shared_professors)
+                   OR EXISTS (
+                       SELECT 1 FROM professor_student ps
+                       WHERE ps.professor_id = %s AND ps.student_id = p.owner_id
+                   )
+            """
+            params = [user["id"], user["id"], user["id"]]
+        else:
+            where_clause = "WHERE p.owner_id = %s"
+            params = [user["id"]]
+
+        with db_cursor() as (_, cur):
+            cur.execute(base_select + " " + where_clause + " ORDER BY p.created_at DESC", params)
+            rows = cur.fetchall()
+            summarized = []
+            for row in rows:
+                plan_data = row["plan_data"] or {}
+                title = plan_data.get("lesson_theme") or plan_data.get("unit_topic") or plan_data.get("topic") or "Untitled"
+                summarized.append(
+                    {
+                        "id": row["id"],
+                        "owner_username": row["owner_username"],
+                        "created_at": row["created_at"].strftime("%Y-%m-%d %H:%M"),
+                        "title": title,
+                    }
+                )
+            return summarized
+    except Exception as e:
+        print(f"Error listing plans from {table_name} for user {user.get('id')}: {str(e)}")
+        return []
 
 
 def can_access_plan(record, user):
@@ -321,23 +396,38 @@ def login():
             message = "Username and password are required."
             return render_template("login.html", message=message, next_url=next_url)
 
-        if mode == "signup":
-            role = request.form.get("role", "student-teacher")
-            role = role if role in ("student-teacher", "professor", "admin") else "student-teacher"
-            existing = get_user_by_username(username)
-            if existing:
-                message = "Username already exists."
+        try:
+            if mode == "signup":
+                role = request.form.get("role", "student-teacher")
+                role = role if role in ("student-teacher", "professor", "admin") else "student-teacher"
+                existing = get_user_by_username(username)
+                if existing:
+                    message = "Username already exists."
+                else:
+                    try:
+                        user = create_user(username, password, role)
+                        set_current_user({"id": user["id"], "username": user["username"], "role": user["role"], "is_guest": False})
+                        return redirect(next_url or url_for("dashboard"))
+                    except Exception as e:
+                        print(f"Error creating user: {str(e)}")
+                        message = "Unable to create account. Please try again later."
             else:
-                user = create_user(username, password, role)
-                set_current_user({"id": user["id"], "username": user["username"], "role": user["role"], "is_guest": False})
-                return redirect(next_url or url_for("dashboard"))
-        else:
-            user = get_user_by_username(username)
-            if not user or not verify_password(password, user["password_hash"]):
-                message = "Invalid credentials."
-            else:
-                set_current_user({"id": user["id"], "username": user["username"], "role": user["role"], "is_guest": False})
-                return redirect(next_url or url_for("dashboard"))
+                user = get_user_by_username(username)
+                if not user:
+                    message = "Invalid credentials."
+                elif not verify_password(password, user["password_hash"]):
+                    message = "Invalid credentials."
+                else:
+                    set_current_user({"id": user["id"], "username": user["username"], "role": user["role"], "is_guest": False})
+                    return redirect(next_url or url_for("dashboard"))
+        except RuntimeError as e:
+            # Database connection error
+            print(f"Database error during login: {str(e)}")
+            message = "Database connection error. Please try again later."
+        except Exception as e:
+            # Other unexpected errors
+            print(f"Unexpected error during login: {str(e)}")
+            message = "An error occurred. Please try again later."
 
     return render_template("login.html", message=message, next_url=next_url)
 
@@ -557,11 +647,15 @@ def create_lesson():
         "self_reflection_zh": self_reflection_zh,
     }
 
-    plan_id = save_plan_record("lesson_plans", user["id"], new_plan, shared_professors)
-    if user["role"] == "student-teacher":
-        ensure_professor_student_links(user["id"], shared_professors)
-
-    return redirect(url_for("view_lesson_plan", plan_id=plan_id))
+    try:
+        plan_id = save_plan_record("lesson_plans", user["id"], new_plan, shared_professors)
+        if user["role"] == "student-teacher":
+            ensure_professor_student_links(user["id"], shared_professors)
+        return redirect(url_for("view_lesson_plan", plan_id=plan_id))
+    except Exception as e:
+        print(f"Error saving lesson plan: {str(e)}")
+        flash("Failed to save lesson plan. Please try again.", "error")
+        return redirect(url_for("create_lesson_form"))
 
 
 @app.route("/create-unit", methods=["POST"])
@@ -671,34 +765,55 @@ def create_unit():
         unit_data["unit_contents_zh"].append(day_data_zh)
         day_num += 1
 
-    plan_id = save_plan_record("unit_plans", user["id"], unit_data, shared_professors)
-    if user["role"] == "student-teacher":
-        ensure_professor_student_links(user["id"], shared_professors)
-    return redirect(url_for("view_unit_plan", plan_id=plan_id))
+    try:
+        plan_id = save_plan_record("unit_plans", user["id"], unit_data, shared_professors)
+        if user["role"] == "student-teacher":
+            ensure_professor_student_links(user["id"], shared_professors)
+        return redirect(url_for("view_unit_plan", plan_id=plan_id))
+    except Exception as e:
+        print(f"Error saving unit plan: {str(e)}")
+        flash("Failed to save unit plan. Please try again.", "error")
+        return redirect(url_for("create_unit_form"))
 
 
 @app.route("/lesson/<int:plan_id>")
 @login_required()
 def view_lesson_plan(plan_id):
     user = get_current_user()
-    record = fetch_plan_record("lesson_plans", plan_id)
-    if not record or not can_access_plan(record, user):
-        abort(403)
-    plan_payload = dict(record["plan_data"] or {})
-    plan_payload["id"] = record["id"]
-    return render_template("view_lesson_plan.html", plan=plan_payload)
+    try:
+        record = fetch_plan_record("lesson_plans", plan_id)
+        if not record:
+            flash("Lesson plan not found.", "error")
+            return redirect(url_for("dashboard"))
+        if not can_access_plan(record, user):
+            abort(403)
+        plan_payload = dict(record["plan_data"] or {})
+        plan_payload["id"] = record["id"]
+        return render_template("view_lesson_plan.html", plan=plan_payload)
+    except Exception as e:
+        print(f"Error viewing lesson plan {plan_id}: {str(e)}")
+        flash("Error loading lesson plan. Please try again.", "error")
+        return redirect(url_for("dashboard"))
 
 
 @app.route("/unit/<int:plan_id>")
 @login_required()
 def view_unit_plan(plan_id):
     user = get_current_user()
-    record = fetch_plan_record("unit_plans", plan_id)
-    if not record or not can_access_plan(record, user):
-        abort(403)
-    plan_payload = dict(record["plan_data"] or {})
-    plan_payload["id"] = record["id"]
-    return render_template("view_unit_plan.html", plan=plan_payload)
+    try:
+        record = fetch_plan_record("unit_plans", plan_id)
+        if not record:
+            flash("Unit plan not found.", "error")
+            return redirect(url_for("dashboard"))
+        if not can_access_plan(record, user):
+            abort(403)
+        plan_payload = dict(record["plan_data"] or {})
+        plan_payload["id"] = record["id"]
+        return render_template("view_unit_plan.html", plan=plan_payload)
+    except Exception as e:
+        print(f"Error viewing unit plan {plan_id}: {str(e)}")
+        flash("Error loading unit plan. Please try again.", "error")
+        return redirect(url_for("dashboard"))
 
 
 @app.route("/diagram-tool")
