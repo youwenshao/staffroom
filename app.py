@@ -73,15 +73,38 @@ def get_database_url():
             print(f"Found database URL from environment variable: {var_name} (host: {masked_url})")
             return ensure_ssl_in_connection_string(url)
     
-    # If no variable found, log available environment variables for debugging
+    # If no variable found, log comprehensive diagnostic information
     # (only log variable names, not values, for security)
-    all_env_vars = list(os.environ.keys())
+    all_env_vars = sorted(list(os.environ.keys()))
     postgres_vars = [v for v in all_env_vars if 'POSTGRES' in v.upper() or 'DATABASE' in v.upper() or 'SUPABASE' in v.upper()]
+    
     print(f"No database URL found. Checked: {', '.join(env_var_names)}")
+    
     if postgres_vars:
         print(f"Found related environment variables: {', '.join(postgres_vars)}")
     else:
         print("No database-related environment variables found.")
+    
+    # Log ALL environment variable names for comprehensive debugging
+    # This helps identify if Vercel Integration variables exist with unexpected names
+    print(f"Total environment variables available: {len(all_env_vars)}")
+    if len(all_env_vars) > 0:
+        # Show first 20 env var names as a sample (to avoid log spam)
+        sample_vars = all_env_vars[:20]
+        print(f"Sample environment variables (first 20): {', '.join(sample_vars)}")
+        if len(all_env_vars) > 20:
+            print(f"... and {len(all_env_vars) - 20} more environment variables")
+    
+    # Provide helpful message for manual configuration
+    print("=" * 80)
+    print("DIAGNOSTIC: Database connection string not found in environment variables.")
+    print("SOLUTION: Set DATABASE_URL in Vercel Dashboard:")
+    print("  1. Go to Vercel Project → Settings → Environment Variables")
+    print("  2. Add variable: DATABASE_URL = postgresql://user:pass@host:5432/db?sslmode=require")
+    print("  3. Get connection string from Supabase Dashboard → Project Settings → Database")
+    print("  4. Ensure variable is set for 'Preview' environment (or all environments)")
+    print("  5. Redeploy after adding the variable")
+    print("=" * 80)
     
     return None
 
