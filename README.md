@@ -256,8 +256,8 @@ staffroom/
 
 ### Key Application Features (Technical)
 
-- **In-Memory Storage**: Plans are stored temporarily in server memory (not persistent across server restarts)
-- **File Upload Handling**: Images are converted to base64 and embedded in HTML
+- **Persistent Storage**: Plans are stored in Supabase Postgres database with role-based access control
+- **File Upload Handling**: Images are uploaded to S3-compatible storage (Supabase storage recommended) and URLs are stored in Postgres
 - **Form Validation**: Client-side and server-side validation for required fields
 - **Responsive Design**: CSS media queries for mobile/tablet/desktop optimization
 - **Print Optimization**: CSS print media queries for clean printed output
@@ -298,9 +298,9 @@ The application is currently deployed on **Vercel**:
 - **Static Assets**: Served via Vercel's static file handling
 
 **Deployment Notes**:
-- The application uses in-memory storage, meaning data is not persistent between deployments or server restarts
-- File uploads are limited to 2MB maximum
-- All plans created are temporary and not saved to a database
+- The application uses Supabase Postgres for persistent data storage
+- File uploads are limited to 2MB maximum and stored in S3-compatible storage
+- Plans are saved to the database and accessible based on role-based permissions
 
 ### Security Considerations
 
@@ -325,7 +325,7 @@ The application is currently deployed on **Vercel**:
 
 - Plans and users are stored in Supabase Postgres. Guests can browse but cannot save or retrieve records.
 - Diagram files upload to S3-compatible storage (Supabase storage recommended) and only the public URL is stored in Postgres.
-- Student-teachers can share plans with selected professors; professors can see their own plans and any shared student plans; admins can see everything.
+- Student-teachers can share plans with selected professors via the `shared_professors` array; professors can see their own plans and plans explicitly shared with them (not based on `professor_student` table relationships); admins can see everything.
 
 **Recommendation for Users**: Download or print plans regularly; storage is best-effort and depends on configured database/bucket availability.
 
@@ -376,6 +376,8 @@ create table professor_student (
   student_id bigint references users(id) on delete cascade,
   primary key (professor_id, student_id)
 );
+-- Note: This table is maintained for relationship tracking but is NOT used for access control.
+-- Access control is based solely on the shared_professors array in lesson_plans and unit_plans.
 
 create table lesson_plans (
   id bigserial primary key,
@@ -400,9 +402,9 @@ create index unit_shared_idx on unit_plans using gin (shared_professors);
 
 ### Role behavior
 
-- `student-teacher`: create/view own plans; pick professors to share; saved to Postgres.
-- `professor`: create/view own plans + any student-teacher who shared with them.
-- `admin`: full visibility.
+- `student-teacher`: create/view own plans; pick professors to share via `shared_professors` array; saved to Postgres. Plans are private unless explicitly shared with professors.
+- `professor`: create/view own plans + plans where they are explicitly listed in the `shared_professors` array. Cannot access student-teacher plans based solely on `professor_student` table relationships.
+- `admin`: full visibility to all plans, including other admins' plans.
 - `guest`: browsing only; no saving/retrieval.
 
 ---
